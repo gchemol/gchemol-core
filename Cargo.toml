@@ -10,7 +10,7 @@ authors = ["Wenping Guo <ybyygu@gmail.com>"]
 [dependencies]
 serde = {version="1", features = ["derive"]}
 nxgraph = { path = "../nxgraph" }
-guts = { git = "https://github.com/ybyygu/guts.git" }
+guts = { git = "https://github.com/ybyygu/guts.git", branch="dev" }
 bimap = { version = "0.4", features = [ "serde" ]}
 # indexmap = {version="1", features=["serde-1"]}
 
