@@ -10,7 +10,7 @@ use crate::element::*;
 // base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
-type Point3 = [f64; 3];
+pub(crate) type Point3 = [f64; 3];
 
 /// Atom is the smallest particle still characterizing a chemical element.
 ///
