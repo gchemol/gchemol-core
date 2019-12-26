@@ -219,7 +219,7 @@ impl Molecule {
     /// Set atom position.
     ///
     /// Panic if atom `sn` does not exist.
-    pub fn set_position<P: Into<Point3>>(&mut self, sn: usize, position: P) {
+    pub fn set_position<P: Into<Vector3f>>(&mut self, sn: usize, position: P) {
         let atom = self.get_atom_mut(sn).expect("invalid atom serial number");
         atom.set_position(position);
     }
@@ -239,17 +239,15 @@ impl Molecule {
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*new][new:1]]
 impl Molecule {
     /// Translate atomic positions by a displacement
-    pub fn translate<P: Into<Point3>>(&mut self, disp: P) {
-        let disp: Point3 = disp.into();
+    pub fn translate<P: Into<Vector3f>>(&mut self, disp: P) {
+        let disp: Vector3f = disp.into();
         for &n in self.mapping.right_values() {
             let atom = &mut self.graph[n];
-            let mut position = atom.position();
-            for v in 0..3 {
-                position[v] += disp[v];
-            }
+            let position = atom.position() + disp;
             atom.set_position(position);
         }
     }
+
 }
 // new:1 ends here
 

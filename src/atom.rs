@@ -10,7 +10,8 @@ use crate::element::*;
 // base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
-pub(crate) type Point3 = [f64; 3];
+// pub(crate) type Vector3f = [f64; 3];
+pub type Vector3f = vecfx::Vector3f;
 
 /// Atom is the smallest particle still characterizing a chemical element.
 ///
@@ -24,19 +25,19 @@ pub struct Atom {
     kind: AtomKind,
 
     /// Atom position.
-    position: Point3,
+    position: Vector3f,
 
     /// Atom label.
     label: Option<String>,
 
     /// Vector quantity equal to the derivative of the position vector with respect to time
-    velocity: Point3,
+    velocity: Vector3f,
 
     /// Atomic mass
     mass: Option<f64>,
 
     /// Atomic momentum vector
-    momentum: Point3,
+    momentum: Vector3f,
 
     /// Atomic partial charge
     partial_charge: f64,
@@ -46,9 +47,9 @@ impl Default for Atom {
     fn default() -> Self {
         Self {
             kind: "C".into(),
-            position: [0.0; 3],
-            momentum: [0.0; 3],
-            velocity: [0.0; 3],
+            position: Vector3f::new(0.0, 0.0, 0.0),
+            momentum: Vector3f::new(0.0, 0.0, 0.0),
+            velocity: Vector3f::new(0.0, 0.0, 0.0),
             partial_charge: 0.0,
 
             // FIXME
@@ -59,7 +60,7 @@ impl Default for Atom {
 }
 
 impl Atom {
-    pub fn new<S: Into<AtomKind>, P: Into<[f64; 3]>>(s: S, p: P) -> Self {
+    pub fn new<S: Into<AtomKind>, P: Into<Vector3f>>(s: S, p: P) -> Self {
         Self {
             kind: s.into(),
             position: p.into(),
@@ -78,22 +79,22 @@ impl Atom {
     }
 
     /// Return atom position in 3D Cartesian coordinates
-    pub fn position(&self) -> [f64; 3] {
+    pub fn position(&self) -> Vector3f {
         self.position
     }
 
     /// Set atom position in 3D Cartesian coordinates
-    pub fn set_position<P: Into<Point3>>(&mut self, p: P) {
+    pub fn set_position<P: Into<Vector3f>>(&mut self, p: P) {
         self.position = p.into();
     }
 
     /// Vector quantity equal to the product of mass and velocity.
-    pub fn momentum(&self) -> Point3 {
+    pub fn momentum(&self) -> Vector3f {
         self.momentum
     }
 
     /// TODO: momentum, momenta
-    pub fn set_momentum<P: Into<Point3>>(&mut self, m: P) {
+    pub fn set_momentum<P: Into<Vector3f>>(&mut self, m: P) {
         self.momentum = m.into();
     }
 

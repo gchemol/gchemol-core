@@ -9,6 +9,7 @@ authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
 serde = {version="1", features = ["derive"]}
+vecfx = { git = "https://github.com/gchemol/vecfx.git", features = ["nalgebra"] }
 guts = { git = "https://github.com/ybyygu/guts.git", branch="dev" }
 bimap = { version = "0.4", features = [ "serde" ]}
 #gchemol_lattice = { git = "https://github.com/gchemol/lattice.git" }
