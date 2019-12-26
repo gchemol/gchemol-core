@@ -8,10 +8,11 @@ edition = "2018"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
-indexmap = {version="1", features=["serde-1"]}
 serde = {version="1", features = ["derive"]}
 nxgraph = { path = "../nxgraph" }
 guts = { git = "https://github.com/ybyygu/guts.git" }
+bimap = { version = "0.4", features = [ "serde" ]}
+# indexmap = {version="1", features=["serde-1"]}
 
 [dev-dependencies]
 # cargo:1 ends here

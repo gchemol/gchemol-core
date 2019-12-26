@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2019-12-25 Wed 19:30>
+//       UPDATED:  <2019-12-26 Thu 10:33>
 //===============================================================================#
 // header:1 ends here
 
@@ -47,7 +47,7 @@ pub struct Bond {
 // core
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*core][core:1]]
-use std::collections::HashMap;
+use bimap::BiHashMap;
 
 type MolGraph = NxGraph<Atom, Bond>;
 
@@ -74,9 +74,35 @@ pub struct Molecule {
     /// core data in graph
     graph: MolGraph,
 
-    // mapping: Atom label => graph NodeIndex
-    // mapping: IndexMap<usize, NodeIndex>,
-    mapping: HashMap<usize, NodeIndex>,
+    // mapping: Atom label <=> graph NodeIndex
+    mapping: BiHashMap<usize, NodeIndex>,
+}
+
+impl Molecule {
+    /// get internal node index by atom sn.
+    fn node_index(&self, sn: usize) -> NodeIndex {
+        *self
+            .mapping
+            .get_by_left(&sn)
+            .expect(&format!("invalid atom sn: {}", sn))
+    }
+
+    /// get atom sn  by internal node index.
+    fn atom_sn(&self, n: NodeIndex) -> usize {
+        *self
+            .mapping
+            .get_by_right(&n)
+            .expect(&format!("invalid NodeIndex: {:?}", n))
+    }
+
+    /// Removes atom sn from mapping and returns the associated NodeIndex.
+    fn remove_atom_sn(&mut self, sn: usize) -> NodeIndex {
+        let (_, n) = self
+            .mapping
+            .remove_by_left(&sn)
+            .expect(&format!("invalid atom sn: {}", sn));
+        n
+    }
 }
 
 impl Molecule {
@@ -91,7 +117,7 @@ impl Molecule {
     /// Add Atom `a` into molecule. If Atom `a` already exists in molecule, then
     /// the associated atom will be updated with `atom`.
     pub fn add_atom(&mut self, a: usize, atom: Atom) {
-        if let Some(&n) = self.mapping.get(&a) {
+        if let Some(&n) = self.mapping.get_by_left(&a) {
             self.graph[n] = atom;
         } else {
             let n = self.graph.add_node(atom);
@@ -101,7 +127,7 @@ impl Molecule {
 
     /// Remove the atom `a`.
     pub fn remove_atom(&mut self, a: usize) {
-        let n = self.mapping[&a];
+        let n = self.remove_atom_sn(a);
         self.graph.remove_node(n);
     }
 
@@ -117,15 +143,15 @@ impl Molecule {
 
     /// Add a bond between atom `a` and atom `b`.
     pub fn add_bond(&mut self, a: usize, b: usize, bond: Bond) {
-        let na = self.mapping[&a];
-        let nb = self.mapping[&b];
+        let na = self.node_index(a);
+        let nb = self.node_index(b);
         self.graph.add_edge(na, nb, bond);
     }
 
     /// Remove a bond between atom `a` and atom `b`
     pub fn remove_bond(&mut self, a: usize, b: usize) {
-        let na = self.mapping[&a];
-        let nb = self.mapping[&b];
+        let na = self.node_index(a);
+        let nb = self.node_index(b);
         self.graph.remove_edge(na, nb);
     }
 
@@ -133,6 +159,21 @@ impl Molecule {
     pub fn clear(&mut self) {
         self.mapping.clear();
         self.graph.clear();
+    }
+
+    pub fn atoms(&self) -> impl Iterator<Item = (usize, &Atom)> {
+        self.graph.nodes().map(move |(n, atom)| {
+            let sn = self.atom_sn(n);
+            (sn, atom)
+        })
+    }
+
+    pub fn bonds(&self) -> impl Iterator<Item = (usize, usize, &Bond)> {
+        self.graph.edges().map(move |(u, v, bond)| {
+            let sn1 = self.atom_sn(u);
+            let sn2 = self.atom_sn(v);
+            (sn1, sn2, bond)
+        })
     }
 }
 // core:1 ends here
