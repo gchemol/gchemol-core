@@ -5,6 +5,9 @@ use serde::*;
 
 use nxgraph::*;
 
+use bimap::BiHashMap;
+use gchemol_lattice::Lattice;
+
 use crate::atom::*;
 use crate::bond::*;
 // imports:1 ends here
@@ -12,8 +15,6 @@ use crate::bond::*;
 // base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
-use bimap::BiHashMap;
-
 type MolGraph = NxGraph<Atom, Bond>;
 
 /// Molecule is the most important data structure in gchemol, which repsents
@@ -33,6 +34,8 @@ pub struct Molecule {
     /// to store a registry number or other identifier, instead of a common
     /// name.
     pub name: String,
+
+    pub lattice: Option<Lattice>,
 
     // Crystalline lattice for structure using periodic boundary conditions
     // pub lattice: Option<Lattice>,
