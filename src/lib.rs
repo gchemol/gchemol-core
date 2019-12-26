@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2019-12-26 Thu 10:33>
+//       UPDATED:  <2019-12-26 Thu 11:04>
 //===============================================================================#
 // header:1 ends here
 
@@ -104,7 +104,11 @@ impl Molecule {
         n
     }
 }
+// core:1 ends here
 
+// api
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
 impl Molecule {
     /// Create a new empty molecule with specific name
     pub fn new(name: &str) -> Self {
@@ -125,10 +129,10 @@ impl Molecule {
         }
     }
 
-    /// Remove the atom `a`.
-    pub fn remove_atom(&mut self, a: usize) {
+    /// Removes atom `a` from `Molecule`, and returns the removed atom.
+    pub fn remove_atom(&mut self, a: usize) -> Atom {
         let n = self.remove_atom_sn(a);
-        self.graph.remove_node(n);
+        self.graph.remove_node(n)
     }
 
     /// Return the number of atoms in the molecule.
@@ -148,11 +152,12 @@ impl Molecule {
         self.graph.add_edge(na, nb, bond);
     }
 
-    /// Remove a bond between atom `a` and atom `b`
-    pub fn remove_bond(&mut self, a: usize, b: usize) {
+    /// Removes a bond between atom `a` and atom `b`, and returns the removed
+    /// `Bond`.
+    pub fn remove_bond(&mut self, a: usize, b: usize) -> Bond {
         let na = self.node_index(a);
         let nb = self.node_index(b);
-        self.graph.remove_edge(na, nb);
+        self.graph.remove_edge(na, nb)
     }
 
     /// Remove all atoms and bonds.
@@ -176,7 +181,7 @@ impl Molecule {
         })
     }
 }
-// core:1 ends here
+// api:1 ends here
 
 // test
 
