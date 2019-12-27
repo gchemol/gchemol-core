@@ -31,11 +31,10 @@ type MolGraph = NxGraph<Atom, Bond>;
 ///
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Molecule {
-    /// Molecular name. The default value is `untitled`. This field may be used
-    /// to store a registry number or other identifier, instead of a common
-    /// name.
-    pub name: String,
+    /// Molecular name.
+    name: String,
 
+    /// Crystalline lattice for structure using periodic boundary conditions
     pub lattice: Option<Lattice>,
 
     // Crystalline lattice for structure using periodic boundary conditions
@@ -166,15 +165,37 @@ impl Molecule {
         })
     }
 
+    // FIXME: item orders?
     /// Iterate over atom serial numbers.
     pub fn serial_numbers(&self) -> impl Iterator<Item = &usize> {
         self.mapping.left_values()
     }
 
-    // /// Iterate over internal node indices.
-    // pub(crate) fn node_indices(&self) -> impl Iterator<Item = &NodeIndex> {
-    //     self.mapping.right_values()
-    // }
+    /// Iterate over atom symbols.
+    pub fn symbols(&self) -> impl Iterator<Item = &str> {
+        self.graph.nodes().map(move |(_, atom)| atom.symbol())
+    }
+
+    /// Iterate over atomic numbers.
+    pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
+        self.graph.nodes().map(move |(_, atom)| atom.number())
+    }
+
+    /// Iterate over atom positions.
+    pub fn positions(&self) -> impl Iterator<Item = &Vector3f> {
+        self.graph.nodes().map(move |(_, atom)| atom.position())
+    }
+
+    /// Return the name of the molecule, while is typpically modified for safely
+    /// storing in various molecular file formats.
+    pub fn title(&self) -> String {
+        let tlines: Vec<_> = self.name.lines().collect();
+        if tlines.is_empty() {
+            "untitled".to_owned()
+        } else {
+            tlines[0].trim().to_owned()
+        }
+    }
 }
 // basic:1 ends here
 

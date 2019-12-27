@@ -10,7 +10,6 @@ use crate::element::*;
 // base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
-// pub(crate) type Vector3f = [f64; 3];
 pub type Vector3f = vecfx::Vector3f;
 
 /// Atom is the smallest particle still characterizing a chemical element.
@@ -79,8 +78,8 @@ impl Atom {
     }
 
     /// Return atom position in 3D Cartesian coordinates
-    pub fn position(&self) -> Vector3f {
-        self.position
+    pub fn position(&self) -> &Vector3f {
+        &self.position
     }
 
     /// Set atom position in 3D Cartesian coordinates

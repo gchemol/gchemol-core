@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2019-12-26 Thu 18:07>
+//       UPDATED:  <2019-12-27 Fri 15:37>
 //===============================================================================#
 // header:1 ends here
 
@@ -20,8 +20,9 @@
 mod atom;
 mod bond;
 mod element;
-mod molecule;
+mod formula;
 mod lattice;
+mod molecule;
 // mods:1 ends here
 
 // exports
