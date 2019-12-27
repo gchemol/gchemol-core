@@ -10,7 +10,7 @@ authors = ["Wenping Guo <ybyygu@gmail.com>"]
 [dependencies]
 vecfx = { git = "https://github.com/gchemol/vecfx.git", features = ["nalgebra"] }
 guts = { git = "https://github.com/ybyygu/guts.git", branch="dev" }
-gchemol_lattice = { git = "https://github.com/gchemol/lattice.git" }
+lattice = { git = "https://github.com/gchemol/lattice.git", branch="dev" }
 nxgraph = { git = "https://github.com/gchemol/nxgraph.git", branch="dev" }
 # nxgraph = { path = "../nxgraph" }
 serde = {version="1", features = ["derive"]}

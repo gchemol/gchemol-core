@@ -6,7 +6,7 @@ use serde::*;
 use nxgraph::*;
 
 use bimap::BiHashMap;
-use gchemol_lattice::Lattice;
+use lattice::Lattice;
 
 use crate::atom::*;
 use crate::bond::*;
