@@ -122,6 +122,7 @@ impl Atom {
 // convert
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*convert][convert:1]]
+use std::convert::From;
 use std::str::FromStr;
 
 impl FromStr for Atom {
@@ -156,6 +157,16 @@ impl std::fmt::Display for Atom {
         )
     }
 }
+
+impl<S, P> From<(S, P)> for Atom
+where
+    S: Into<AtomKind>,
+    P: Into<Vector3f>,
+{
+    fn from(item: (S, P)) -> Self {
+        Self::new(item.0, item.1)
+    }
+}
 // convert:1 ends here
 
 // test
@@ -180,12 +191,16 @@ fn test_atom_basic() {
 }
 
 #[test]
-fn test_atom_from_str() {
+fn test_atom_convert() {
     let line = "H 1.0 1.0 1.0";
     let a: Atom = line.parse().unwrap();
     let line = a.to_string();
     let b: Atom = line.parse().unwrap();
     assert_eq!(a.symbol(), b.symbol());
     assert_eq!(a.position(), b.position());
+
+    // from and into
+    let a: Atom = (1, [0.0; 3]).into();
+    assert_eq!(a.number(), 1);
 }
 // test:1 ends here

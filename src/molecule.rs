@@ -252,6 +252,36 @@ impl Molecule {
         let atom = self.get_atom_mut(sn).expect("invalid atom serial number");
         atom.set_symbol(sym);
     }
+
+    /// Batch adding a list of atoms.
+    pub fn add_atoms_from<T, P>(&mut self, atoms: T)
+    where
+        T: IntoIterator<Item = (usize, P)>,
+        P: Into<Atom>,
+    {
+        for (n, a) in atoms {
+            self.add_atom(n, a.into());
+        }
+    }
+
+    /// Build a molecule from a list of atoms numbered from 1.
+    pub fn from_atoms<T>(atoms: T) -> Self
+    where
+        T: IntoIterator,
+        T::Item: Into<Atom>,
+    {
+        let mut mol = Self::default();
+        for (i, a) in atoms.into_iter().enumerate() {
+            mol.add_atom(i + 1, a.into());
+        }
+
+        mol
+    }
+
+    /// Set molecular title.
+    pub fn set_title(&mut self, title: &str) {
+        self.name = title.to_owned();
+    }
 }
 // new:1 ends here
 

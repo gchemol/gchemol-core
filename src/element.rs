@@ -192,6 +192,11 @@ impl std::convert::From<usize> for AtomKind {
 
 impl std::convert::From<&str> for AtomKind {
     fn from(label: &str) -> Self {
+        // element specified in number
+        if let Ok(x) = label.parse::<usize>() {
+            return Element(x);
+        }
+
         // element specified in symbol or long name
         let sym = label.to_uppercase();
         for (i, &(s, n)) in ELEMENT_DATA.iter().enumerate() {
@@ -214,9 +219,11 @@ fn test_element() {
     let h1: AtomKind = 1.into();
     let h2: AtomKind = "H".into();
     let h3: AtomKind = "h".into();
+    let h4: AtomKind = "1".into();
 
     assert_eq!(h1, h2);
     assert_eq!(h1, h3);
+    assert_eq!(h1, h4);
 
     let si: AtomKind = "SI".into();
     assert_eq!(si.number(), 14);
