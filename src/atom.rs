@@ -126,7 +126,7 @@ use std::convert::From;
 use std::str::FromStr;
 
 impl FromStr for Atom {
-    type Err = guts::failure::Error;
+    type Err = Error;
 
     fn from_str(line: &str) -> Result<Self> {
         let parts: Vec<_> = line.split_whitespace().collect();
