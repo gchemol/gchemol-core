@@ -3,16 +3,17 @@
 # [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*cargo][cargo:1]]
 [package]
 name = "gchemol-core"
-version = "0.1.0-alpha"
+version = "0.1.0-alpha1"
 edition = "2018"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
 vecfx = { git = "https://github.com/gchemol/vecfx.git", features = ["nalgebra"] }
 guts = { git = "https://github.com/ybyygu/guts.git", branch="dev" }
-lattice = { git = "https://github.com/gchemol/lattice.git", branch="dev" }
-nxgraph = { git = "https://github.com/gchemol/nxgraph.git", branch="dev" }
-# nxgraph = { path = "../nxgraph" }
+# lattice = { git = "https://github.com/gchemol/lattice.git", branch="dev" }
+# nxgraph = { git = "https://github.com/gchemol/nxgraph.git", branch="dev" }
+nxgraph = { path = "../nxgraph" }
+lattice = { path = "../lattice" }
 serde = {version="1", features = ["derive"]}
 bimap = { version = "0.4", features = ["serde"]}
 
