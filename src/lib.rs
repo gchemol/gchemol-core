@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-01-10 Fri 20:44>
+//       UPDATED:  <2020-01-15 Wed 13:37>
 //===============================================================================#
 // header:1 ends here
 
@@ -30,6 +30,7 @@ mod molecule;
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*exports][exports:1]]
 pub use crate::atom::*;
 pub use crate::bond::*;
+pub use crate::element::*;
 pub use crate::lattice::*;
 pub use crate::molecule::*;
 // exports:1 ends here

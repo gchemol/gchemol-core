@@ -182,7 +182,7 @@ impl Molecule {
     }
 
     /// Iterate over atom positions.
-    pub fn positions(&self) -> impl Iterator<Item = &Vector3f> {
+    pub fn positions(&self) -> impl Iterator<Item = Point3> + '_ {
         self.graph.nodes().map(move |(_, atom)| atom.position())
     }
 
@@ -294,11 +294,11 @@ impl Molecule {
         let disp: Vector3f = disp.into();
         for &n in self.mapping.right_values() {
             let atom = &mut self.graph[n];
-            let position = atom.position() + disp;
+            let p: Vector3f = atom.position().into();
+            let position = p + disp;
             atom.set_position(position);
         }
     }
-
 }
 // new:1 ends here
 
