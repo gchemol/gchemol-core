@@ -87,6 +87,11 @@ impl Atom {
         self.position = p.into();
     }
 
+    /// Return atom kind.
+    pub fn kind(&self) -> &AtomKind {
+        &self.kind
+    }
+
     /// Vector quantity equal to the product of mass and velocity.
     pub fn momentum(&self) -> Vector3f {
         self.momentum
