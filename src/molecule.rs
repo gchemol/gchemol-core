@@ -282,6 +282,16 @@ impl Molecule {
     pub fn set_title(&mut self, title: &str) {
         self.name = title.to_owned();
     }
+
+    /// Batch adding a list of atoms.
+    pub fn add_bonds_from<T>(&mut self, bonds: T)
+    where
+        T: IntoIterator<Item = (usize, usize, Bond)>,
+    {
+        for (u, v, b) in bonds {
+            self.add_bond(u, v, b);
+        }
+    }
 }
 // new:1 ends here
 
