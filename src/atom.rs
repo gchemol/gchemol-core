@@ -40,7 +40,7 @@ pub struct Atom {
     velocity: Vector3f,
 
     /// Atomic mass
-    mass: Option<f64>,
+    pub(crate) mass: Option<f64>,
 
     /// Atomic momentum vector
     momentum: Vector3f,
@@ -128,6 +128,19 @@ impl Atom {
     /// Set atom symbol.
     pub fn set_symbol<S: Into<AtomKind>>(&mut self, symbol: S) {
         self.kind = symbol.into()
+    }
+
+    /// Return true if atom is dummy.
+    pub fn is_dummy(&self) -> bool {
+        match self.kind {
+            AtomKind::Element(_) => false,
+            AtomKind::Dummy(_) => true,
+        }
+    }
+
+    /// Return true if atom is an element.
+    pub fn is_element(&self) -> bool {
+        !self.is_dummy()
     }
 }
 // base:1 ends here

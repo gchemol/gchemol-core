@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-02-03 Mon 14:36>
+//       UPDATED:  <2020-02-03 Mon 16:03>
 //===============================================================================#
 // header:1 ends here
 
@@ -19,6 +19,7 @@
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*mods][mods:1]]
 mod atom;
 mod bond;
+mod data;
 mod element;
 mod formula;
 mod lattice;
