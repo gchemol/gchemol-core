@@ -3,7 +3,7 @@
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use crate::molecule::Molecule;
 use guts::prelude::*;
-pub use lattice::Lattice;
+pub use ::lattice::Lattice;
 // imports:1 ends here
 
 // basic

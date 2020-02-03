@@ -11,6 +11,7 @@ use lattice::Lattice;
 use crate::atom::*;
 use crate::bond::*;
 use crate::element::*;
+use crate::property::PropertyStore;
 // imports:1 ends here
 
 // base
@@ -31,6 +32,10 @@ type MolGraph = NxGraph<Atom, Bond>;
 ///
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct Molecule {
+    /// Arbitrary property stored in key-value pair. Key is a string type, but
+    /// it is the responsibility of the user to correctly interpret the value.
+    pub properties: PropertyStore,
+
     /// Molecular name.
     name: String,
 
@@ -264,7 +269,8 @@ impl Molecule {
         }
     }
 
-    /// Build a molecule from a list of atoms numbered from 1.
+    /// Build a molecule from a list of atoms with serial numbers counting from
+    /// 1.
     pub fn from_atoms<T>(atoms: T) -> Self
     where
         T: IntoIterator,

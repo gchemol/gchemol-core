@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-01-15 Wed 13:37>
+//       UPDATED:  <2020-02-03 Mon 14:36>
 //===============================================================================#
 // header:1 ends here
 
@@ -23,6 +23,7 @@ mod element;
 mod formula;
 mod lattice;
 mod molecule;
+mod property;
 // mods:1 ends here
 
 // exports
@@ -33,4 +34,6 @@ pub use crate::bond::*;
 pub use crate::element::*;
 pub use crate::lattice::*;
 pub use crate::molecule::*;
+
+pub use crate::property::PropertyStore;
 // exports:1 ends here

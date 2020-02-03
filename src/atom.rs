@@ -5,6 +5,7 @@ use guts::prelude::*;
 use serde::*;
 
 use crate::element::*;
+use crate::property::PropertyStore;
 // imports:1 ends here
 
 // base
@@ -22,6 +23,10 @@ pub(crate) type Point3 = [f64; 3];
 ///
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Atom {
+    /// Arbitrary property stored in key-value pair. Key is a string type, but
+    /// it is the responsibility of the user to correctly interpret the value.
+    pub properties: PropertyStore,
+
     /// Chemical element or dummy atom.
     kind: AtomKind,
 
@@ -47,6 +52,7 @@ pub struct Atom {
 impl Default for Atom {
     fn default() -> Self {
         Self {
+            properties: PropertyStore::default(),
             kind: "C".into(),
             position: Vector3f::new(0.0, 0.0, 0.0),
             momentum: Vector3f::new(0.0, 0.0, 0.0),

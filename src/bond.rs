@@ -2,6 +2,8 @@
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use serde::*;
+
+use crate::property::PropertyStore;
 // imports:1 ends here
 
 // base
@@ -29,6 +31,10 @@ pub enum BondKind {
 ///
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct Bond {
+    /// Arbitrary property stored in key-value pair. Key is a string type, but
+    /// it is the responsibility of the user to correctly interpret the value.
+    pub properties: PropertyStore,
+
     /// bond type
     kind: BondKind,
 
@@ -45,6 +51,7 @@ impl Default for Bond {
             kind: BondKind::Single,
             label: String::new(),
             order: None,
+            properties: PropertyStore::default(),
         }
     }
 }
@@ -158,6 +165,5 @@ impl Bond {
 fn test_bond() {
     let b = Bond::default();
     assert_eq!(1.0, b.order());
-
 }
 // test:1 ends here

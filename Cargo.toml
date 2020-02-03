@@ -8,14 +8,16 @@ edition = "2018"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
+serde = {version="1", features = ["derive"]}
+serde_json = "1"
+bimap = { version = "0.4", features = ["serde"]}
 vecfx = { git = "https://github.com/gchemol/vecfx.git", features = ["nalgebra"] }
-guts = { git = "https://github.com/ybyygu/guts.git", branch="dev" }
+# guts = { git = "https://github.com/ybyygu/guts.git" }
 # lattice = { git = "https://github.com/gchemol/lattice.git", branch="dev" }
 # nxgraph = { git = "https://github.com/gchemol/nxgraph.git", branch="dev" }
 nxgraph = { path = "../nxgraph" }
 lattice = { path = "../lattice" }
-serde = {version="1", features = ["derive"]}
-bimap = { version = "0.4", features = ["serde"]}
+guts = { path = "../../guts" }
 
 [dev-dependencies]
 # cargo:1 ends here
