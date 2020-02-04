@@ -46,7 +46,7 @@ pub struct Atom {
     momentum: Vector3f,
 
     /// Atomic partial charge
-    partial_charge: f64,
+    partial_charge: Option<f64>,
 }
 
 impl Default for Atom {
@@ -57,7 +57,7 @@ impl Default for Atom {
             position: Vector3f::new(0.0, 0.0, 0.0),
             momentum: Vector3f::new(0.0, 0.0, 0.0),
             velocity: Vector3f::new(0.0, 0.0, 0.0),
-            partial_charge: 0.0,
+            partial_charge: None,
 
             // FIXME
             mass: None,
@@ -101,8 +101,8 @@ impl Atom {
     }
 
     /// Vector quantity equal to the product of mass and velocity.
-    pub fn momentum(&self) -> Vector3f {
-        self.momentum
+    pub fn momentum(&self) -> Point3 {
+        self.momentum.into()
     }
 
     /// TODO: momentum, momenta
