@@ -1,9 +1,11 @@
 // imports
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+pub use lattice::Lattice;
+
+use crate::atom::Vector3f;
 use crate::molecule::Molecule;
 use guts::prelude::*;
-pub use ::lattice::Lattice;
 // imports:1 ends here
 
 // basic
@@ -20,35 +22,27 @@ impl Molecule {
         self.lattice = None
     }
 
-    // /// Return fractional coordinates relative to unit cell.
-    // /// Return None if not a periodic structure
-    // pub fn scaled_positions(&self) -> Option<Vec<[f64; 3]>> {
-    //     if let Some(mut lat) = self.lattice {
-    //         let mut fxyzs = vec![];
-    //         for (_, a) in self.atoms() {
-    //             let xyz = a.position();
-    //             let fxyz = lat.to_frac(xyz);
-    //             fxyzs.push(fxyz.into())
-    //         }
-    //         Some(fxyzs)
-    //     } else {
-    //         None
-    //     }
-    // }
+    // FIXME: avoid type conversion
+    /// Return fractional coordinates relative to unit cell. Return None if not
+    /// a periodic structure
+    pub fn scaled_positions(&self) -> Option<impl Iterator<Item = [f64; 3]> + '_> {
+        self.lattice
+            .map(|lat| self.positions().map(move |cart| lat.to_frac(cart).into()))
+    }
 
-    // /// Set fractional coordinates relative to unit cell.
-    // pub fn set_scaled_positions(&mut self, scaled: &[[f64; 3]]) -> Result<()> {
-    //     if let Some(mut lat) = self.lattice {
-    //         let mut positions = vec![];
-    //         for &p in scaled {
-    //             let xyz = lat.to_cart(p);
-    //             positions.push(p);
-    //         }
-
-    //         self.set_positions(&positions)
-    //     } else {
-    //         bail!("cannot set scaled positions for aperiodic structure")
-    //     }
-    // }
+    /// Set fractional coordinates relative to unit cell.
+    ///
+    /// Panics if Molecule is aperiodic structure.
+    pub fn set_scaled_positions<T, P>(&mut self, scaled: T)
+    where
+        T: IntoIterator<Item = P>,
+        P: Into<Vector3f>,
+    {
+        let mut lat = self
+            .lattice
+            .expect("cannot set scaled positions for aperiodic structure");
+        let positions = scaled.into_iter().map(|frac| lat.to_cart(frac));
+        self.set_positions(positions);
+    }
 }
 // basic:1 ends here

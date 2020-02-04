@@ -9,7 +9,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 14:40>
-//       UPDATED:  <2020-02-03 Mon 17:07>
+//       UPDATED:  <2020-02-04 Tue 16:54>
 //===============================================================================#
 
 use serde::*;
@@ -237,7 +237,7 @@ impl Atom {
 // test
 
 #[test]
-fn test_guess_bond_kind() {
+fn test_atom_data() {
     // carbon atom
     let atom1 = Atom::new("C", [-0.90203687, 0.62555259, 0.0081889]);
     // dummy atom

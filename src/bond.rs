@@ -165,5 +165,8 @@ impl Bond {
 fn test_bond() {
     let b = Bond::default();
     assert_eq!(1.0, b.order());
+    assert_eq!(1.0, Bond::single().order());
+    assert_eq!(2.0, Bond::double().order());
+    assert_eq!(3.0, Bond::triple().order());
 }
 // test:1 ends here
