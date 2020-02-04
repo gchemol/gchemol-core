@@ -3,6 +3,7 @@
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use serde::*;
 
+use guts::prelude::*;
 use nxgraph::*;
 
 use bimap::BiHashMap;
@@ -47,7 +48,7 @@ pub struct Molecule {
     /// core data in graph
     graph: MolGraph,
 
-    // mapping: Atom label <=> graph NodeIndex
+    /// mapping: Atom serial number <=> graph NodeIndex
     mapping: BiHashMap<usize, NodeIndex>,
 }
 
@@ -91,8 +92,8 @@ impl Molecule {
         }
     }
 
-    /// Add Atom `a` into molecule. If Atom `a` already exists in molecule, then
-    /// the associated atom will be updated with `atom`.
+    /// Add atom `a` into molecule. If Atom numbered as `a` already exists in
+    /// molecule, then the associated Atom will be updated with `atom`.
     pub fn add_atom(&mut self, a: usize, atom: Atom) {
         if let Some(&n) = self.mapping.get_by_left(&a) {
             self.graph[n] = atom;
@@ -102,9 +103,9 @@ impl Molecule {
         }
     }
 
-    /// Remove atom `a` from `Molecule`.
+    /// Remove Atom `a` from `Molecule`.
     ///
-    /// Return the removed atom on success, and return None if atom `a` does not
+    /// Return the removed Atom on success, and return None if Atom `a` does not
     /// exist.
     pub fn remove_atom(&mut self, a: usize) -> Option<Atom> {
         if let Some(n) = self.remove_atom_sn(a) {
@@ -124,11 +125,11 @@ impl Molecule {
         self.graph.number_of_edges()
     }
 
-    /// Add a bond between atom `a` and atom `b` into molecule.
+    /// Add `bond` between Atom `a` and Atom `b` into molecule. The existing
+    /// Bond will be replaced if Atom `a` already bonded with Atom `b`.
     ///
-    /// Panic if the specified atoms does not exist
+    /// Panic if the specified atom `a` or `b` does not exist
     ///
-    /// The existing bond will be replaced if atom `a` already bonded with atom `b`.
     pub fn add_bond(&mut self, a: usize, b: usize, bond: Bond) {
         let na = self.node_index(a);
         let nb = self.node_index(b);
@@ -138,13 +139,12 @@ impl Molecule {
     /// Remove the bond between atom `a` and atom `b`.
     ///
     /// Returns the removed `Bond` on success
+    ///
+    /// Panic if the specified atom `a` or `b` does not exist
     pub fn remove_bond(&mut self, a: usize, b: usize) -> Option<Bond> {
-        if let Some(&na) = self.get_node_index(a) {
-            if let Some(&nb) = self.get_node_index(b) {
-                return self.graph.remove_edge(na, nb);
-            }
-        }
-        None
+        let na = self.node_index(a);
+        let nb = self.node_index(b);
+        self.graph.remove_edge(na, nb)
     }
 
     /// Remove all atoms and bonds.
@@ -153,15 +153,17 @@ impl Molecule {
         self.graph.clear();
     }
 
-    /// Iterate over atoms.
+    /// Iterate over atoms ordered by serial numbers.
     pub fn atoms(&self) -> impl Iterator<Item = (usize, &Atom)> {
-        self.graph.nodes().map(move |(n, atom)| {
-            let sn = self.atom_sn(n);
+        // sort by atom serial numbers
+        self.serial_numbers().map(move |sn| {
+            let n = self.node_index(sn);
+            let atom = &self.graph[n];
             (sn, atom)
         })
     }
 
-    /// Iterate over bonds.
+    /// Iterate over bonds in arbitrary order.
     pub fn bonds(&self) -> impl Iterator<Item = (usize, usize, &Bond)> {
         self.graph.edges().map(move |(u, v, bond)| {
             let sn1 = self.atom_sn(u);
@@ -170,25 +172,24 @@ impl Molecule {
         })
     }
 
-    // FIXME: item orders?
-    /// Iterate over atom serial numbers.
-    pub fn serial_numbers(&self) -> impl Iterator<Item = &usize> {
-        self.mapping.left_values()
+    /// Iterate over atom serial numbers in ascending order.
+    pub fn serial_numbers(&self) -> impl Iterator<Item = usize> {
+        self.mapping.left_values().copied().sorted()
     }
 
-    /// Iterate over atom symbols.
+    /// Iterate over atom symbols ordered by serial numbers.
     pub fn symbols(&self) -> impl Iterator<Item = &str> {
-        self.graph.nodes().map(move |(_, atom)| atom.symbol())
+        self.atoms().map(move |(_, atom)| atom.symbol())
     }
 
     /// Iterate over atomic numbers.
     pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
-        self.graph.nodes().map(move |(_, atom)| atom.number())
+        self.atoms().map(move |(_, atom)| atom.number())
     }
 
-    /// Iterate over atom positions.
+    /// Iterate over atom positions ordered by serial numbers.
     pub fn positions(&self) -> impl Iterator<Item = Point3> + '_ {
-        self.graph.nodes().map(move |(_, atom)| atom.position())
+        self.atoms().map(move |(_, atom)| atom.position())
     }
 
     /// Return the name of the molecule, while is typpically modified for safely
@@ -204,9 +205,9 @@ impl Molecule {
 }
 // basic:1 ends here
 
-// new
+// edit
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*new][new:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*edit][edit:1]]
 impl Molecule {
     /// Read access to atom by atom serial number.
     pub fn get_atom(&self, sn: usize) -> Option<&Atom> {
@@ -232,6 +233,7 @@ impl Molecule {
         }
         None
     }
+
     /// Mutable access to bond by a pair of atoms.
     pub fn get_bond_mut(&mut self, sn1: usize, sn2: usize) -> Option<&mut Bond> {
         if let Some(&n1) = self.get_node_index(sn1) {
@@ -258,7 +260,7 @@ impl Molecule {
         atom.set_symbol(sym);
     }
 
-    /// Batch adding a list of atoms.
+    /// Add a list of atoms into molecule.
     pub fn add_atoms_from<T, P>(&mut self, atoms: T)
     where
         T: IntoIterator<Item = (usize, P)>,
@@ -269,8 +271,7 @@ impl Molecule {
         }
     }
 
-    /// Build a molecule from a list of atoms with serial numbers counting from
-    /// 1.
+    /// Build a molecule from a list of atoms numbered from 1.
     pub fn from_atoms<T>(atoms: T) -> Self
     where
         T: IntoIterator,
@@ -289,7 +290,7 @@ impl Molecule {
         self.name = title.to_owned();
     }
 
-    /// Batch adding a list of atoms.
+    /// Add a list of bonds into molecule.
     pub fn add_bonds_from<T>(&mut self, bonds: T)
     where
         T: IntoIterator<Item = (usize, usize, Bond)>,
@@ -298,25 +299,40 @@ impl Molecule {
             self.add_bond(u, v, b);
         }
     }
-}
-// new:1 ends here
 
-// new
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*new][new:1]]
-impl Molecule {
-    /// Translate atomic positions by a displacement
-    pub fn translate<P: Into<Vector3f>>(&mut self, disp: P) {
-        let disp: Vector3f = disp.into();
-        for &n in self.mapping.right_values() {
-            let atom = &mut self.graph[n];
-            let p: Vector3f = atom.position().into();
-            let position = p + disp;
-            atom.set_position(position);
+    /// Set positions of atoms in sequential order.
+    pub fn set_positions<T, P>(&mut self, positions: T)
+    where
+        T: IntoIterator<Item = P>,
+        P: Into<Vector3f>,
+    {
+        for (sn, p) in self.serial_numbers().zip(positions.into_iter()) {
+            let atom = self.get_atom_mut(sn).unwrap();
+            atom.set_position(p);
         }
     }
+
+    /// Set element symbols
+    pub fn set_symbols<T, S>(&mut self, symbols: T)
+    where
+        T: IntoIterator<Item = S>,
+        S: Into<AtomKind>,
+    {
+        for (sn, sy) in self.serial_numbers().zip(symbols.into_iter()) {
+            let atom = self.get_atom_mut(sn).unwrap();
+            atom.set_symbol(sy);
+        }
+    }
+
+    pub fn remove_atoms_from(&mut self) {
+        unimplemented!()
+    }
+
+    pub fn remove_bonds_from(&mut self) {
+        unimplemented!()
+    }
 }
-// new:1 ends here
+// edit:1 ends here
 
 // test
 
