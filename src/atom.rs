@@ -1,8 +1,7 @@
 // imports
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
-use guts::prelude::*;
-use serde::*;
+use gchemol_gut::prelude::*;
 
 use crate::element::*;
 use crate::property::PropertyStore;
@@ -128,6 +127,12 @@ impl Atom {
     /// Set atom symbol.
     pub fn set_symbol<S: Into<AtomKind>>(&mut self, symbol: S) {
         self.kind = symbol.into()
+    }
+
+    /// Assign atom partial charge, usually for molecular mechanical
+    /// calculations.
+    pub fn set_partial_charge(&mut self, c: f64) {
+        self.partial_charge = Some(c);
     }
 
     /// Return true if atom is dummy.

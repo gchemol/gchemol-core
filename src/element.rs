@@ -205,7 +205,7 @@ impl std::convert::From<&str> for AtomKind {
             }
         }
 
-        // treat as dummy atom for the last resort
+        // set as dummy atom as the last resort
         Dummy(label.into())
     }
 }

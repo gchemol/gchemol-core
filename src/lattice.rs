@@ -1,11 +1,10 @@
 // imports
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
-pub use lattice::Lattice;
+pub use gchemol_lattice::Lattice;
 
 use crate::atom::Vector3f;
 use crate::molecule::Molecule;
-use guts::prelude::*;
 // imports:1 ends here
 
 // basic
@@ -38,7 +37,7 @@ impl Molecule {
         T: IntoIterator<Item = P>,
         P: Into<Vector3f>,
     {
-        let mut lat = self
+        let lat = self
             .lattice
             .expect("cannot set scaled positions for aperiodic structure");
         let positions = scaled.into_iter().map(|frac| lat.to_cart(frac));

@@ -9,12 +9,10 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 14:40>
-//       UPDATED:  <2020-02-04 Tue 16:54>
+//       UPDATED:  <2020-02-08 Sat 10:07>
 //===============================================================================#
 
-use serde::*;
-
-use crate::{Atom, AtomKind, Bond, BondKind, Molecule};
+use crate::{Atom, AtomKind};
 
 // radii
 // Element radii data taking from: https://mendeleev.readthedocs.io/en/stable/data.html

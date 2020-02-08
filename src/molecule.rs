@@ -3,11 +3,11 @@
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use serde::*;
 
-use guts::prelude::*;
-use nxgraph::*;
+use gchemol_graph::*;
+use gchemol_gut::prelude::*;
 
 use bimap::BiHashMap;
-use lattice::Lattice;
+use gchemol_lattice::Lattice;
 
 use crate::atom::*;
 use crate::bond::*;
