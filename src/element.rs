@@ -209,6 +209,18 @@ impl std::convert::From<&str> for AtomKind {
         Dummy(label.into())
     }
 }
+
+impl std::convert::From<String> for AtomKind {
+    fn from(label: String) -> Self {
+        Self::from(label.as_str())
+    }
+}
+
+impl std::convert::From<&String> for AtomKind {
+    fn from(label: &String) -> Self {
+        Self::from(label.as_str())
+    }
+}
 // conversion:1 ends here
 
 // test
@@ -234,5 +246,9 @@ fn test_element() {
     let x: AtomKind = "X".into();
     assert_eq!(x.symbol(), "X");
     assert_eq!(x.number(), 0);
+
+    let s = String::from("Fe");
+    let fe: AtomKind = s.into();
+    assert_eq!(fe.symbol(), "Fe");
 }
 // test:1 ends here
