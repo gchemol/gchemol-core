@@ -16,11 +16,9 @@ serde = {version="1", features = ["derive"]}
 serde_json = "1"
 bimap = { version = "0.4", features = ["serde"]}
 vecfx = { version = "0.0.8", features = ["nalgebra"] }
-gchemol-gut = "0.0.7"
+gchemol-gut = "0.0.8"
 gchemol-graph = "0.0.4"
-gchemol-lattice = "0.0.4"
-# gchemol-graph = { path = "../nxgraph" }
-# gchemol-lattice = { path = "../lattice" }
+gchemol-lattice = "0.0.5"
 
 [dev-dependencies]
 # cargo:1 ends here
