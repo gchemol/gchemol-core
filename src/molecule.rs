@@ -37,19 +37,19 @@ pub struct Molecule {
     /// it is the responsibility of the user to correctly interpret the value.
     pub properties: PropertyStore,
 
-    /// Molecular name.
-    name: String,
-
     /// Crystalline lattice for structure using periodic boundary conditions
     pub lattice: Option<Lattice>,
+
+    /// Molecular name.
+    pub(crate) name: String,
 
     // Crystalline lattice for structure using periodic boundary conditions
     // pub lattice: Option<Lattice>,
     /// core data in graph
-    graph: MolGraph,
+    pub(crate) graph: MolGraph,
 
     /// mapping: Atom serial number <=> graph NodeIndex
-    mapping: BiHashMap<usize, NodeIndex>,
+    pub(crate) mapping: BiHashMap<usize, NodeIndex>,
 }
 
 impl Molecule {
