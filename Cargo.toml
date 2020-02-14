@@ -10,6 +10,7 @@ description = "Core chemical objects for gchemol"
 homepage = "https://github.com/gchemol/gchemol-core"
 repository = "https://github.com/gchemol/gchemol-core"
 license = "MIT OR Apache-2.0"
+exclude = ["bin/*", "docs/*", "ltxpng/*", "data/*"]
 
 [dependencies]
 serde = {version="1", features = ["derive"]}
@@ -18,7 +19,10 @@ gchemol-gut = "0.1"
 bimap = { version = "0.4", features = ["serde"]}
 vecfx = { version = "0.0.8", features = ["nalgebra"] }
 gchemol-graph = "0.0.4"
-gchemol-lattice = "0.0.5"
+gchemol-lattice = "0.0.6"
 
 [dev-dependencies]
+
+[features]
+adhoc = [] # for adhoc hacking
 # cargo:1 ends here

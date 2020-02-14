@@ -8,6 +8,7 @@ use crate::Molecule;
 
 type Point3 = [f64; 3];
 
+#[cfg(feature="adhoc")]
 impl Molecule {
     /// Translate the whole molecule by a displacement
     pub fn translate<P: Into<Vector3f>>(&mut self, disp: P) {
