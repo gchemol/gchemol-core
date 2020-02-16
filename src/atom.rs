@@ -1,7 +1,7 @@
 // imports
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
-use gchemol_gut::prelude::*;
+use gut::prelude::*;
 
 use crate::element::*;
 use crate::property::PropertyStore;

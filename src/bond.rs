@@ -83,6 +83,21 @@ impl Bond {
         &self.label
     }
 
+    /// Return true if `Bond` is a dummy bond.
+    pub fn is_dummy(&self) -> bool {
+        self.kind == BondKind::Dummy
+    }
+
+    /// Return true if `Bond` is a single bond.
+    pub fn is_single(&self) -> bool {
+        self.kind == BondKind::Single
+    }
+
+    /// Return true if `Bond` is a double bond.
+    pub fn is_double(&self) -> bool {
+        self.kind == BondKind::Double
+    }
+
     /// Return bond order
     pub fn order(&self) -> f64 {
         if let Some(order) = self.order {

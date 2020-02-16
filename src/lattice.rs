@@ -7,9 +7,10 @@ use crate::atom::Vector3f;
 use crate::molecule::Molecule;
 // imports:1 ends here
 
-// basic
+// api
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*basic][basic:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+/// Lattice related methods
 impl Molecule {
     /// Set periodic lattice
     pub fn set_lattice(&mut self, lat: Lattice) {
@@ -48,14 +49,8 @@ impl Molecule {
         let positions = scaled.into_iter().map(|frac| lat.to_cart(frac));
         self.set_positions(positions);
     }
-}
-// basic:1 ends here
 
-// supercell
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*supercell][supercell:1]]
-#[cfg(feature = "adhoc")]
-impl Molecule {
+    #[cfg(feature = "adhoc")]
     /// Create a supercell.
     ///
     /// # Arguments
@@ -91,4 +86,4 @@ impl Molecule {
         Some(mol_new)
     }
 }
-// supercell:1 ends here
+// api:1 ends here

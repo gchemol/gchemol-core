@@ -4,7 +4,7 @@
 use serde::*;
 
 use gchemol_graph::*;
-use gchemol_gut::prelude::*;
+use gut::prelude::*;
 
 use bimap::BiHashMap;
 use gchemol_lattice::Lattice;

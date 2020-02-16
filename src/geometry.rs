@@ -2,13 +2,12 @@
 
 use vecfx::Vector3f;
 
-use crate::Molecule;
+use crate::{Atom, Molecule};
 
 // core
 
 type Point3 = [f64; 3];
 
-#[cfg(feature="adhoc")]
 impl Molecule {
     /// Translate the whole molecule by a displacement
     pub fn translate<P: Into<Vector3f>>(&mut self, disp: P) {
@@ -51,5 +50,40 @@ impl Molecule {
             p[i] *= -1.0;
         }
         self.translate(p);
+    }
+}
+
+// distance
+
+impl Atom {
+    /// Return distance to other atom.
+    pub fn distance(&self, other: &Atom) -> f64 {
+        gchemol_geometry::euclidean_distance(self.position(), other.position())
+    }
+}
+
+impl Molecule {
+    /// Return the distance between `atom i` and `atom j`. For periodic
+    /// structure, this method will return the distance under the minimum image
+    /// convention.
+    ///
+    /// # Panic
+    ///
+    /// * if atom indices `i` or `j` out of range.
+    pub fn distance(&self, i: usize, j: usize) -> f64 {
+        match (self.get_atom(i), self.get_atom(j)) {
+            (Some(ai), Some(aj)) => {
+                if let Some(mut lat) = self.lattice {
+                    let pi = ai.position();
+                    let pj = aj.position();
+                    lat.distance(pi, pj)
+                } else {
+                    ai.distance(aj)
+                }
+            }
+            _ => {
+                panic!("atom indices out of range: {}, {}", i, j);
+            }
+        }
     }
 }

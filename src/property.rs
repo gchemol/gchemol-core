@@ -3,7 +3,7 @@
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use std::collections::HashMap;
 
-use gchemol_gut::prelude::*;
+use gut::prelude::*;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json;
 // imports:1 ends here
