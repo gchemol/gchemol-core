@@ -15,6 +15,7 @@ use crate::{Atom, Molecule};
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*extra properties][extra properties:1]]
 #[cfg(feature = "adhoc")]
+/// Extra properties for `Atom`.
 impl Atom {
     /// Vector quantity equal to the product of mass and velocity.
     pub fn momentum(&self) -> Point3 {
@@ -28,6 +29,7 @@ impl Atom {
 }
 
 #[cfg(feature = "adhoc")]
+/// Extra properties for `Molecule`.
 impl Molecule {
     /// # Panics
     ///

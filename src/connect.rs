@@ -76,6 +76,7 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
 // api
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+/// Handling chemical bonds in `Molecule`.
 impl Molecule {
     /// Removes all existing bonds between atoms
     pub fn unbound(&mut self) {

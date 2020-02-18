@@ -6,18 +6,25 @@ use serde::*;
 use crate::property::PropertyStore;
 // imports:1 ends here
 
-// base
+// core
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*core][core:1]]
 /// https://en.wikipedia.org/wiki/Bond_order
 #[derive(Debug, Clone, Copy, PartialOrd, PartialEq, Deserialize, Serialize)]
 pub enum BondKind {
+    /// dummy bond
     Dummy,
+    /// partial bond
     Partial,
+    /// single bond
     Single,
+    /// aromatic bond
     Aromatic,
+    /// double bond,
     Double,
+    /// triple bond
     Triple,
+    /// quadruple bond
     Quadruple,
 }
 
@@ -44,7 +51,12 @@ pub struct Bond {
     /// set this attribute for arbitrary bond order
     order: Option<f64>,
 }
+// core:1 ends here
 
+// constructors
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*constructors][constructors:1]]
+/// default `Bond` constructor
 impl Default for Bond {
     fn default() -> Self {
         Bond {
@@ -56,6 +68,70 @@ impl Default for Bond {
     }
 }
 
+/// `Bond` constructors
+impl Bond {
+    /// Create a single bond
+    pub fn single() -> Self {
+        Bond {
+            kind: BondKind::Single,
+            ..Default::default()
+        }
+    }
+
+    /// Create a double bond
+    pub fn double() -> Self {
+        Bond {
+            kind: BondKind::Double,
+            ..Default::default()
+        }
+    }
+
+    /// Create a triple bond
+    pub fn triple() -> Self {
+        Bond {
+            kind: BondKind::Triple,
+            ..Default::default()
+        }
+    }
+
+    /// Create an aromatic bond
+    pub fn aromatic() -> Self {
+        Bond {
+            kind: BondKind::Aromatic,
+            ..Default::default()
+        }
+    }
+
+    /// Create a weak bond
+    pub fn partial() -> Self {
+        Bond {
+            kind: BondKind::Partial,
+            ..Default::default()
+        }
+    }
+
+    /// Create a quadruple bond
+    pub fn quadruple() -> Self {
+        Bond {
+            kind: BondKind::Quadruple,
+            ..Default::default()
+        }
+    }
+
+    /// Create a dummy bond
+    pub fn dummy() -> Self {
+        Bond {
+            kind: BondKind::Dummy,
+            ..Default::default()
+        }
+    }
+}
+// constructors:1 ends here
+
+// base
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+/// Basic methods for `Bond`
 impl Bond {
     /// Returns bond kind/type.
     pub fn kind(&self) -> BondKind {
@@ -112,62 +188,6 @@ impl Bond {
                 BondKind::Triple => 3.0,
                 BondKind::Quadruple => 4.0,
             }
-        }
-    }
-
-    /// Create a single bond
-    pub fn single() -> Self {
-        Bond {
-            kind: BondKind::Single,
-            ..Default::default()
-        }
-    }
-
-    /// Create a double bond
-    pub fn double() -> Self {
-        Bond {
-            kind: BondKind::Double,
-            ..Default::default()
-        }
-    }
-
-    /// Create a triple bond
-    pub fn triple() -> Self {
-        Bond {
-            kind: BondKind::Triple,
-            ..Default::default()
-        }
-    }
-
-    /// Create an aromatic bond
-    pub fn aromatic() -> Self {
-        Bond {
-            kind: BondKind::Aromatic,
-            ..Default::default()
-        }
-    }
-
-    /// Create a weak bond
-    pub fn partial() -> Self {
-        Bond {
-            kind: BondKind::Partial,
-            ..Default::default()
-        }
-    }
-
-    /// Create a quadruple bond
-    pub fn quadruple() -> Self {
-        Bond {
-            kind: BondKind::Quadruple,
-            ..Default::default()
-        }
-    }
-
-    /// Create a dummy bond
-    pub fn dummy() -> Self {
-        Bond {
-            kind: BondKind::Dummy,
-            ..Default::default()
         }
     }
 }

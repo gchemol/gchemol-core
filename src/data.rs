@@ -9,7 +9,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 14:40>
-//       UPDATED:  <2020-02-08 Sat 10:07>
+//       UPDATED:  <2020-02-18 Tue 11:31>
 //===============================================================================#
 
 use crate::{Atom, AtomKind};
@@ -201,6 +201,7 @@ fn get_atom_mass(atom: &Atom) -> Option<f64> {
 
 // pub
 
+/// Core data for `Atom`
 impl Atom {
     /// Access covalent radius of atom. Return None if no data available or atom is dummy.
     pub fn get_cov_radius(&self) -> Option<f64> {

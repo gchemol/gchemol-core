@@ -10,8 +10,10 @@ use crate::property::PropertyStore;
 // base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+/// nalgebra 3D Vector
 pub type Vector3f = vecfx::Vector3f;
 
+/// Plain 3D array
 pub type Point3 = [f64; 3];
 
 /// Atom is the smallest particle still characterizing a chemical element.
@@ -66,6 +68,7 @@ impl Default for Atom {
 }
 
 impl Atom {
+    /// Construct `Atom` from element symbol and Cartesian coordinates.
     pub fn new<S: Into<AtomKind>, P: Into<Vector3f>>(s: S, p: P) -> Self {
         Self {
             kind: s.into(),

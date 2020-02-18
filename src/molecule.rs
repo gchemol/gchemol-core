@@ -52,12 +52,11 @@ pub struct Molecule {
     pub(crate) mapping: BiHashMap<usize, NodeIndex>,
 }
 
+/// Methods for internal uses
 impl Molecule {
     /// get internal node index by atom sn.
     pub(crate) fn node_index(&self, sn: usize) -> NodeIndex {
-        *self
-            .get_node_index(sn)
-            .expect(&format!("invalid atom sn: {}", sn))
+        *self.get_node_index(sn).expect(&format!("invalid atom sn: {}", sn))
     }
 
     /// get internal node index by atom sn.
@@ -80,9 +79,10 @@ impl Molecule {
 }
 // base:1 ends here
 
-// basic
+// constructor
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*basic][basic:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*constructor][constructor:1]]
+/// `Molecule` constructors
 impl Molecule {
     /// Create a new empty molecule with specific name
     pub fn new(name: &str) -> Self {
@@ -92,6 +92,28 @@ impl Molecule {
         }
     }
 
+    /// Build a molecule from iterator of atoms associated with serial numbers
+    /// from 1.
+    pub fn from_atoms<T>(atoms: T) -> Self
+    where
+        T: IntoIterator,
+        T::Item: Into<Atom>,
+    {
+        let mut mol = Self::default();
+        for (i, a) in atoms.into_iter().enumerate() {
+            mol.add_atom(i + 1, a.into());
+        }
+
+        mol
+    }
+}
+// constructor:1 ends here
+
+// basic
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*basic][basic:1]]
+/// Core methods
+impl Molecule {
     /// Add atom `a` into molecule. If Atom numbered as `a` already exists in
     /// molecule, then the associated Atom will be updated with `atom`.
     pub fn add_atom(&mut self, a: usize, atom: Atom) {
@@ -208,6 +230,7 @@ impl Molecule {
 // edit
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*edit][edit:1]]
+/// Edit `Molecule`
 impl Molecule {
     /// Read access to atom by atom serial number.
     pub fn get_atom(&self, sn: usize) -> Option<&Atom> {
@@ -271,20 +294,6 @@ impl Molecule {
         }
     }
 
-    /// Build a molecule from a list of atoms numbered from 1.
-    pub fn from_atoms<T>(atoms: T) -> Self
-    where
-        T: IntoIterator,
-        T::Item: Into<Atom>,
-    {
-        let mut mol = Self::default();
-        for (i, a) in atoms.into_iter().enumerate() {
-            mol.add_atom(i + 1, a.into());
-        }
-
-        mol
-    }
-
     /// Set molecular title.
     pub fn set_title(&mut self, title: &str) {
         self.name = title.to_owned();
@@ -324,10 +333,12 @@ impl Molecule {
         }
     }
 
+    /// Remove atoms from .. (unimplemented)
     pub fn remove_atoms_from(&mut self) {
         unimplemented!()
     }
 
+    /// Remove bonds from .. (unimplemented)
     pub fn remove_bonds_from(&mut self) {
         unimplemented!()
     }

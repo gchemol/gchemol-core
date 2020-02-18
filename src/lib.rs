@@ -10,9 +10,15 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-02-18 Tue 10:32>
+//       UPDATED:  <2020-02-18 Tue 11:59>
 //===============================================================================#
+
+#![deny(missing_docs)] // rustdoc will fail if there is missing docs
 // header:1 ends here
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*docs][docs:2]]
+//!# Core chemical objects for gchemol
+// docs:2 ends here
 
 // mods
 

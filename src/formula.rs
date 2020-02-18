@@ -76,6 +76,7 @@ fn test_formula() {
 // api
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+/// Chemical formula
 impl Molecule {
     /// Return the molecule formula represented in string
     /// Return empty string if molecule containing no atom

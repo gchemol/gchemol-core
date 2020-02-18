@@ -5,6 +5,7 @@ use crate::{Point3, Vector3f};
 
 // api/core
 
+/// Geometry related methods
 impl Molecule {
     /// Translate the whole molecule by a displacement
     pub fn translate<P: Into<Vector3f>>(&mut self, disp: P) {

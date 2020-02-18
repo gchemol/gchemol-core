@@ -9,6 +9,7 @@ use crate::Molecule;
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*topo path][topo path:1]]
 use gchemol_graph::petgraph::algo;
 
+/// High level topology structure of `Molecule`.
 impl Molecule {
     /// Return the shortest distance counted in number of chemical bonds between
     /// two atoms. Return None if they are not connected.
