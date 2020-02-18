@@ -1,12 +1,9 @@
 // imports
 
-use vecfx::Vector3f;
-
 use crate::{Atom, Molecule};
+use crate::{Point3, Vector3f};
 
-// core
-
-type Point3 = [f64; 3];
+// api/core
 
 impl Molecule {
     /// Translate the whole molecule by a displacement
@@ -53,7 +50,7 @@ impl Molecule {
     }
 }
 
-// distance
+// api/distance
 
 impl Atom {
     /// Return distance to other atom.

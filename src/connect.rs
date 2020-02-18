@@ -122,7 +122,7 @@ impl Molecule {
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
 #[test]
-fn test_guess_bond_kind() {
+fn test_connect() {
     // CH4 molecule
     let atom1 = Atom::new("C", [-0.90203687, 0.62555259, 0.0081889]);
     let atom2 = Atom::new("H", [-0.54538244, -0.38325741, 0.0081889]);

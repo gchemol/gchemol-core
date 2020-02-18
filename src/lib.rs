@@ -10,7 +10,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-02-15 Sat 16:04>
+//       UPDATED:  <2020-02-18 Tue 10:32>
 //===============================================================================#
 // header:1 ends here
 
@@ -27,9 +27,13 @@ mod molecule;
 mod property;
 
 #[cfg(feature = "adhoc")]
+mod clean;
+#[cfg(feature = "adhoc")]
 mod connect;
 #[cfg(feature = "adhoc")]
 mod geometry;
+#[cfg(feature = "adhoc")]
+mod topology;
 // mods:1 ends here
 
 // exports

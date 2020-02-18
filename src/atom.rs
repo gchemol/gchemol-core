@@ -12,7 +12,7 @@ use crate::property::PropertyStore;
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
 pub type Vector3f = vecfx::Vector3f;
 
-pub(crate) type Point3 = [f64; 3];
+pub type Point3 = [f64; 3];
 
 /// Atom is the smallest particle still characterizing a chemical element.
 ///
@@ -36,16 +36,16 @@ pub struct Atom {
     label: Option<String>,
 
     /// Vector quantity equal to the derivative of the position vector with respect to time
-    velocity: Vector3f,
+    pub(crate) velocity: Vector3f,
 
     /// Atomic mass
     pub(crate) mass: Option<f64>,
 
     /// Atomic momentum vector
-    momentum: Vector3f,
+    pub(crate) momentum: Vector3f,
 
     /// Atomic partial charge
-    partial_charge: Option<f64>,
+    pub(crate) partial_charge: Option<f64>,
 }
 
 impl Default for Atom {
@@ -97,16 +97,6 @@ impl Atom {
     /// Return atom kind.
     pub fn kind(&self) -> &AtomKind {
         &self.kind
-    }
-
-    /// Vector quantity equal to the product of mass and velocity.
-    pub fn momentum(&self) -> Point3 {
-        self.momentum.into()
-    }
-
-    /// TODO: momentum, momenta
-    pub fn set_momentum<P: Into<Vector3f>>(&mut self, m: P) {
-        self.momentum = m.into();
     }
 
     /// Set atom label

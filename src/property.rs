@@ -6,11 +6,45 @@ use std::collections::HashMap;
 use gut::prelude::*;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json;
+
+use crate::atom::{Point3, Vector3f};
+use crate::{Atom, Molecule};
 // imports:1 ends here
 
-// impl
+// extra properties
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*impl][impl:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*extra properties][extra properties:1]]
+#[cfg(feature = "adhoc")]
+impl Atom {
+    /// Vector quantity equal to the product of mass and velocity.
+    pub fn momentum(&self) -> Point3 {
+        self.momentum.into()
+    }
+
+    /// TODO: momentum, momenta
+    pub fn set_momentum<P: Into<Vector3f>>(&mut self, m: P) {
+        self.momentum = m.into();
+    }
+}
+
+#[cfg(feature = "adhoc")]
+impl Molecule {
+    /// # Panics
+    ///
+    /// * panic if there is no atom associated with `sn`.
+    pub fn set_momentum<P: Into<Vector3f>>(&mut self, sn: usize, m: P) {
+        if let Some(atom) = self.get_atom_mut(sn) {
+            atom.set_momentum(m);
+        } else {
+            panic!("invalid sn: {}", sn);
+        }
+    }
+}
+// extra properties:1 ends here
+
+// adhoc properties
+
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*adhoc properties][adhoc properties:1]]
 /// A container storing extra information managed as key/value pairs
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct PropertyStore {
@@ -45,7 +79,7 @@ impl PropertyStore {
         self.data.remove(key);
     }
 }
-// impl:1 ends here
+// adhoc properties:1 ends here
 
 // test
 

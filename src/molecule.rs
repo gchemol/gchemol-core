@@ -54,19 +54,19 @@ pub struct Molecule {
 
 impl Molecule {
     /// get internal node index by atom sn.
-    fn node_index(&self, sn: usize) -> NodeIndex {
+    pub(crate) fn node_index(&self, sn: usize) -> NodeIndex {
         *self
             .get_node_index(sn)
             .expect(&format!("invalid atom sn: {}", sn))
     }
 
     /// get internal node index by atom sn.
-    fn get_node_index(&self, sn: usize) -> Option<&NodeIndex> {
+    pub(crate) fn get_node_index(&self, sn: usize) -> Option<&NodeIndex> {
         self.mapping.get_by_left(&sn)
     }
 
     /// get atom sn  by internal node index.
-    fn atom_sn(&self, n: NodeIndex) -> usize {
+    pub(crate) fn atom_sn(&self, n: NodeIndex) -> usize {
         *self
             .mapping
             .get_by_right(&n)
@@ -74,7 +74,7 @@ impl Molecule {
     }
 
     /// Removes atom sn from mapping and returns the associated NodeIndex.
-    fn remove_atom_sn(&mut self, sn: usize) -> Option<NodeIndex> {
+    pub(crate) fn remove_atom_sn(&mut self, sn: usize) -> Option<NodeIndex> {
         self.mapping.remove_by_left(&sn).map(|(_, n)| n)
     }
 }
@@ -147,7 +147,7 @@ impl Molecule {
         self.graph.remove_edge(na, nb)
     }
 
-    /// Remove all atoms and bonds.
+    /// Remove all atoms and bonds. To remove bonds only, see [unbound](#method.unbound) method.
     pub fn clear(&mut self) {
         self.mapping.clear();
         self.graph.clear();
