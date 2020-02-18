@@ -194,9 +194,23 @@ impl Molecule {
         })
     }
 
-    /// Iterate over atom serial numbers in ascending order.
+    /// Iterate over atom serial numbers in ascending order. Serial number is an
+    /// unsigned integer (1-based, traditionally) for accessing `Atom` in
+    /// `Molecule`
     pub fn serial_numbers(&self) -> impl Iterator<Item = usize> {
         self.mapping.left_values().copied().sorted()
+    }
+
+    #[cfg(feature = "adhoc")]
+    /// A shorter alias to [serial_numbers](#method.serial_numbers) method.
+    pub fn numbers(&self) -> impl Iterator<Item = usize> {
+        self.serial_numbers()
+    }
+
+    #[cfg(not(feature = "adhoc"))]
+    #[deprecated(since = "0.0.40", note = "please use atomic_numbers instead")]
+    pub fn numbers(&self) -> impl Iterator<Item = usize> {
+        self.atomic_numbers()
     }
 
     /// Iterate over atom symbols ordered by serial numbers.
@@ -205,7 +219,7 @@ impl Molecule {
     }
 
     /// Iterate over atomic numbers.
-    pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
+    pub fn atomic_numbers(&self) -> impl Iterator<Item = usize> + '_ {
         self.atoms().map(move |(_, atom)| atom.number())
     }
 
