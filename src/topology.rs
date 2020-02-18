@@ -10,8 +10,8 @@ use crate::Molecule;
 use gchemol_graph::petgraph::algo;
 
 impl Molecule {
-    /// Return the shortest distance numbered in bonds between two atoms
-    /// Return None if they are not connected
+    /// Return the shortest distance counted in number of chemical bonds between
+    /// two atoms. Return None if they are not connected.
     pub fn nbonds_between(&self, sn1: usize, sn2: usize) -> Option<usize> {
         let graph = self.graph.raw_graph();
         let node1 = self.node_index(sn1);

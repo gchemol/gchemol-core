@@ -192,8 +192,8 @@ impl Molecule {
         self.atoms().map(move |(_, atom)| atom.position())
     }
 
-    /// Return the name of the molecule, while is typpically modified for safely
-    /// storing in various molecular file formats.
+    /// Return the name of the molecule, which is typpically modified for safely
+    /// storing in various chemical file formats.
     pub fn title(&self) -> String {
         let tlines: Vec<_> = self.name.lines().collect();
         if tlines.is_empty() {

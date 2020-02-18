@@ -27,5 +27,5 @@ gchemol-lattice = "0.0.6"
 [dev-dependencies]
 
 [features]
-adhoc = ["gchemol-geometry/adhoc"] # for adhoc hacking
+adhoc = ["gchemol-geometry/adhoc", "gchemol-graph/adhoc"] # for adhoc hacking
 # cargo:1 ends here
