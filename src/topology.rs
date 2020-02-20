@@ -4,9 +4,9 @@
 use crate::Molecule;
 // imports:1 ends here
 
-// topo path
+// api
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*topo path][topo path:1]]
+// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
 use gchemol_graph::petgraph::algo;
 
 /// High level topology structure of `Molecule`.
@@ -46,8 +46,14 @@ impl Molecule {
             None
         }
     }
+
+    /// Return all directly bonded atoms with `a`
+    pub fn connected(&self, a: usize) -> impl Iterator<Item = usize> + '_ {
+        let node = self.node_index(a);
+        self.graph.neighbors(node).map(move |b| self.atom_sn(b))
+    }
 }
-// topo path:1 ends here
+// api:1 ends here
 
 // test
 

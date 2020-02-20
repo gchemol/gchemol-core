@@ -238,6 +238,18 @@ impl Molecule {
             tlines[0].trim().to_owned()
         }
     }
+
+    #[cfg(feature = "adhoc")]
+    /// Return a reference to internal Molecule Graph struct.
+    pub fn graph(&self) -> &NxGraph<Atom, Bond> {
+        &self.graph
+    }
+
+    #[cfg(feature = "adhoc")]
+    /// Return mut access to internal Molecule Graph struct.
+    pub fn graph_mut(&mut self) -> &mut NxGraph<Atom, Bond> {
+        &mut self.graph
+    }
 }
 // basic:1 ends here
 
@@ -261,7 +273,8 @@ impl Molecule {
         }
     }
 
-    /// Read access to bond by a pair of atoms.
+    /// Read access to bond by a pair of atoms. Return None if there is no bond
+    /// between Atom `sn1` and Atom `sn2`.
     pub fn get_bond(&self, sn1: usize, sn2: usize) -> Option<&Bond> {
         if let Some(&n1) = self.get_node_index(sn1) {
             if let Some(&n2) = self.get_node_index(sn2) {
