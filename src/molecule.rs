@@ -203,13 +203,14 @@ impl Molecule {
 
     #[cfg(feature = "adhoc")]
     /// A shorter alias to [serial_numbers](#method.serial_numbers) method.
-    pub fn numbers(&self) -> impl Iterator<Item = usize> {
+    pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
         self.serial_numbers()
     }
 
     #[cfg(not(feature = "adhoc"))]
     #[deprecated(since = "0.0.40", note = "please use atomic_numbers instead")]
-    pub fn numbers(&self) -> impl Iterator<Item = usize> {
+    /// Return an iterator over atomic numbers of atoms.
+    pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
         self.atomic_numbers()
     }
 
