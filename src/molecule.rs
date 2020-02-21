@@ -323,8 +323,8 @@ impl Molecule {
     }
 
     /// Set molecular title.
-    pub fn set_title(&mut self, title: &str) {
-        self.name = title.to_owned();
+    pub fn set_title<S: AsRef<str>>(&mut self, title: S) {
+        self.name = title.as_ref().to_owned();
     }
 
     /// Add a list of bonds into molecule.
@@ -394,5 +394,9 @@ fn test() {
     for (i, a) in mol.atoms() {
         dbg!((i, a.symbol()));
     }
+
+    // set title
+    mol.set_title("new mol");
+    mol.set_title(format!("Molecule: {}", 4));
 }
 // test:1 ends here
