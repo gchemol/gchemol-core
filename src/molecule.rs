@@ -116,12 +116,12 @@ impl Molecule {
 impl Molecule {
     /// Add atom `a` into molecule. If Atom numbered as `a` already exists in
     /// molecule, then the associated Atom will be updated with `atom`.
-    pub fn add_atom(&mut self, a: usize, atom: Atom) {
-        if let Some(&n) = self.mapping.get_by_left(&a) {
+    pub fn add_atom(&mut self, sn: usize, atom: Atom) {
+        if let Some(&n) = self.mapping.get_by_left(&sn) {
             self.graph[n] = atom;
         } else {
             let n = self.graph.add_node(atom);
-            self.mapping.insert(a, n);
+            self.mapping.insert_no_overwrite(sn, n).expect("add aom failure");
         }
     }
 

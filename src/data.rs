@@ -9,10 +9,10 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 14:40>
-//       UPDATED:  <2020-02-18 Tue 11:31>
+//       UPDATED:  <2020-02-24 Mon 16:33>
 //===============================================================================#
 
-use crate::{Atom, AtomKind};
+use crate::{Atom, AtomKind, Molecule};
 
 // radii
 // Element radii data taking from: https://mendeleev.readthedocs.io/en/stable/data.html
@@ -199,7 +199,7 @@ fn get_atom_mass(atom: &Atom) -> Option<f64> {
     }
 }
 
-// pub
+// atom
 
 /// Core data for `Atom`
 impl Atom {
@@ -230,6 +230,48 @@ impl Atom {
     /// Return None if no data available
     pub fn vdw_radius(&self) -> Option<f64> {
         self.get_vdw_radius()
+    }
+}
+
+// molecule
+
+impl Molecule {
+    /// Returns `Molecule` created from the internal database (mainly for tests).
+    pub fn from_database(name: &str) -> Self {
+        let ch4 = "
+  C  -0.0000   -0.0000    0.0000
+  H   1.0900   -0.0000    0.0000
+  H  -0.3633    1.0277    0.0000
+  H  -0.3633   -0.5138    0.8900
+  H  -0.3633   -0.5138   -0.8900 ";
+
+        let h2o = "
+O    -1.4689     2.1375     0.0000
+H    -0.5089     2.1375     0.0000
+H    -1.7894     3.0424     0.0000
+";
+
+        let hcn = "
+H		-2.5671751	1.2900188	0.0000000
+C		-1.4971751	1.2900188	0.0000000
+N		-0.3505751	1.2900188	0.0000000
+";
+
+        match name {
+            "HCN" => {
+                let atoms = hcn.trim().lines().filter_map(|line| line.parse::<Atom>().ok());
+                Molecule::from_atoms(atoms)
+            }
+            "H2O" => {
+                let atoms = h2o.trim().lines().filter_map(|line| line.parse::<Atom>().ok());
+                Molecule::from_atoms(atoms)
+            }
+            "CH4" => {
+                let atoms = ch4.trim().lines().filter_map(|line| line.parse::<Atom>().ok());
+                Molecule::from_atoms(atoms)
+            }
+            _ => unimplemented!(),
+        }
     }
 }
 
