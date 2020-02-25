@@ -26,7 +26,7 @@ impl Molecule {
         }
     }
 
-    /// Return the shortest path between two atoms. Return None if them are not
+    /// Return the shortest path between two atoms. Return None if they are not
     /// connected.
     ///
     /// # Panics
@@ -51,11 +51,6 @@ impl Molecule {
     pub fn connected(&self, a: usize) -> impl Iterator<Item = usize> + '_ {
         let node = self.node_index(a);
         self.graph.neighbors(node).map(move |b| self.atom_sn(b))
-    }
-
-    /// Fragment molecule into multiple fragments based on connectivity.
-    pub fn fragment(&self) -> Vec<Self> {
-        todo!()
     }
 }
 // api:1 ends here
