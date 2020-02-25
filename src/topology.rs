@@ -52,6 +52,11 @@ impl Molecule {
         let node = self.node_index(a);
         self.graph.neighbors(node).map(move |b| self.atom_sn(b))
     }
+
+    /// Fragment molecule into multiple fragments based on connectivity.
+    pub fn fragment(&self) -> Vec<Self> {
+        todo!()
+    }
 }
 // api:1 ends here
 
@@ -63,13 +68,7 @@ fn test_topo_path() {
     use crate::Atom;
 
     // CH4 molecule
-    let atom1 = Atom::new("C", [-0.90203687, 0.62555259, 0.0081889]);
-    let atom2 = Atom::new("H", [-0.54538244, -0.38325741, 0.0081889]);
-    let atom3 = Atom::new("H", [-0.54536403, 1.12995078, 0.88184041]);
-    let atom4 = Atom::new("H", [-0.54536403, 1.12995078, -0.8654626]);
-    let atom5 = Atom::new("H", [-1.97203687, 0.62556577, 0.0081889]);
-
-    let mut mol = Molecule::from_atoms(vec![atom1, atom2, atom3, atom4, atom5]);
+    let mut mol = Molecule::from_database("CH4");
     mol.rebond();
 
     let n = mol.nbonds_between(1, 2);

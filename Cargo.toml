@@ -20,7 +20,7 @@ bimap = { version = "0.4", features = ["serde"]}
 vecfx = { version = "0.1", features = ["nalgebra"] }
 gut = { version = "0.1.1", package="gchemol-gut" }
 neighbors = { version = "0.0.7", package="gchemol-neighbors" }
-gchemol-graph = { version="0.1", features=["adhoc"] }
+gchemol-graph = { version="0.1.1", features=["adhoc"] }
 gchemol-geometry = { version="0.0.38", features=["adhoc"] }
 gchemol-lattice = "0.0.6"
 

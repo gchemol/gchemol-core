@@ -43,8 +43,6 @@ pub struct Molecule {
     /// Molecular name.
     pub(crate) name: String,
 
-    // Crystalline lattice for structure using periodic boundary conditions
-    // pub lattice: Option<Lattice>,
     /// core data in graph
     pub(crate) graph: MolGraph,
 
@@ -106,6 +104,23 @@ impl Molecule {
 
         mol
     }
+
+    /// Build `Molecule` from raw graph struct.
+    pub fn from_graph(graph: MolGraph) -> Self {
+        // FIXME: serial number mapping?
+        let mut mol = Self {
+            graph,
+            ..Default::default()
+        };
+
+        // create serial number mapping
+        let nodes: Vec<_> = mol.graph.node_indices().collect();
+        for (sn, n) in (1..).zip(nodes.into_iter()) {
+            mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
+        }
+
+        mol
+    }
 }
 // constructor:1 ends here
 
@@ -121,7 +136,7 @@ impl Molecule {
             self.graph[n] = atom;
         } else {
             let n = self.graph.add_node(atom);
-            self.mapping.insert_no_overwrite(sn, n).expect("add aom failure");
+            self.mapping.insert_no_overwrite(sn, n).expect("add atom failure");
         }
     }
 
