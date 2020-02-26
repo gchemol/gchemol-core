@@ -47,6 +47,7 @@ fn guess_bond(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
 
 /// Guess if bonds exist between two atoms based on their distance.
 pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
+    // FIXME: lattice?
     let mut nh = neighbors::Neighborhood::new();
     let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
     nh.update(points);
@@ -107,6 +108,7 @@ impl Molecule {
     /// covalent radii.
     pub fn rebond(&mut self) {
         if self.lattice.is_some() {
+            // FIXME: impl
             unimplemented!();
         }
 

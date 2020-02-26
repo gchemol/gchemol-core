@@ -12,6 +12,12 @@ use crate::molecule::Molecule;
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
 /// Lattice related methods
 impl Molecule {
+    #[cfg(feature = "adhoc")]
+    /// Get a reference to `Lattice` struct.
+    pub fn get_lattice(&self) -> Option<&Lattice> {
+        self.lattice.as_ref()
+    }
+
     /// Set periodic lattice
     pub fn set_lattice(&mut self, lat: Lattice) {
         self.lattice = Some(lat);
@@ -27,10 +33,17 @@ impl Molecule {
         self.lattice = None
     }
 
-    // FIXME: avoid type conversion
+    #[deprecated(note = "use get_scaled_positions instead")]
     /// Return fractional coordinates relative to unit cell. Return None if not
     /// a periodic structure
     pub fn scaled_positions(&self) -> Option<impl Iterator<Item = [f64; 3]> + '_> {
+        self.get_scaled_positions()
+    }
+
+    // FIXME: avoid type conversion
+    /// Return fractional coordinates relative to unit cell. Return None if not
+    /// a periodic structure
+    pub fn get_scaled_positions(&self) -> Option<impl Iterator<Item = [f64; 3]> + '_> {
         self.lattice
             .map(|lat| self.positions().map(move |cart| lat.to_frac(cart).into()))
     }
