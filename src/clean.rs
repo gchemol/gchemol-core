@@ -1,13 +1,9 @@
-// imports
-
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use crate::{Atom, Molecule};
 use gut::prelude::*;
 
 use std::collections::HashMap;
 // imports:1 ends here
-
-// core
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*core][core:1]]
 type Bounds = HashMap<(usize, usize), f64>;
@@ -80,10 +76,18 @@ fn get_distance_bounds_v1(mol: &Molecule) -> Bounds {
 }
 // core:1 ends here
 
-// core
-
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*core][core:1]]
-use gchemol_geometry::euclidean_distance;
+#[inline]
+/// Return Cartesian distance between two points in 3D space.
+fn euclidean_distance(p1: [f64; 3], p2: [f64; 3]) -> f64 {
+    let mut d2 = 0.0;
+    for v in 0..3 {
+        let dv = p2[v] - p1[v];
+        d2 += dv * dv;
+    }
+
+    d2.sqrt()
+}
 
 // the weight between two atoms
 fn get_weight_between(lij: f64, uij: f64, dij: f64) -> f64 {
