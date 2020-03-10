@@ -56,7 +56,9 @@ impl Molecule {
 impl Atom {
     /// Return distance to other atom.
     pub fn distance(&self, other: &Atom) -> f64 {
-        gchemol_geometry::euclidean_distance(self.position(), other.position())
+        use vecfx::*;
+
+        self.position().vecdist(&other.position())
     }
 }
 
