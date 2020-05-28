@@ -1,13 +1,9 @@
-// imports
-
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
 use gut::prelude::*;
 
 use crate::element::*;
 use crate::property::PropertyStore;
 // imports:1 ends here
-
-// base
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
 /// nalgebra 3D Vector
@@ -48,6 +44,9 @@ pub struct Atom {
 
     /// Atomic partial charge
     pub(crate) partial_charge: Option<f64>,
+
+    /// Indicates freezing atom
+    freezing: [bool; 3],
 }
 
 impl Default for Atom {
@@ -63,6 +62,7 @@ impl Default for Atom {
             // FIXME
             mass: None,
             label: None,
+            freezing: [false; 3],
         }
     }
 }
@@ -94,7 +94,13 @@ impl Atom {
 
     /// Set atom position in 3D Cartesian coordinates
     pub fn set_position<P: Into<Vector3f>>(&mut self, p: P) {
-        self.position = p.into();
+        // refuse to update position of freezing atom
+        let new_position: Vector3f = p.into();
+        for (i, masked) in self.freezing.iter().enumerate() {
+            if !*masked {
+                self.position[i] = new_position[i];
+            }
+        }
     }
 
     /// Return atom kind.
@@ -140,10 +146,23 @@ impl Atom {
     pub fn is_element(&self) -> bool {
         !self.is_dummy()
     }
+
+    /// Return true if atom has freezing masks in all x, y, z coords
+    pub fn is_fixed(&self) -> bool {
+        self.freezing.iter().all(|f| *f)
+    }
+
+    /// Set freezing mask array for Cartesian coordinates
+    pub fn set_freezing(&mut self, x: bool, y: bool, z: bool) {
+        self.freezing = [x, y, z];
+    }
+
+    /// Return freezing mask array for Cartesian coordinates
+    pub fn freezing(&self) -> [bool; 3] {
+        self.freezing
+    }
 }
 // base:1 ends here
-
-// convert
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*convert][convert:1]]
 use std::convert::From;
@@ -192,8 +211,6 @@ where
     }
 }
 // convert:1 ends here
-
-// test
 
 // [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
 #[test]
