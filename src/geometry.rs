@@ -43,7 +43,7 @@ impl Molecule {
 
     /// Center the molecule around its center of geometry
     pub fn recenter(&mut self) {
-        if self.is_periodic {
+        if self.is_periodic() {
             todo!();
         } else {
             let mut p = self.center_of_geometry();

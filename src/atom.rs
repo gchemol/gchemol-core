@@ -153,8 +153,8 @@ impl Atom {
     }
 
     /// Set freezing mask array for Cartesian coordinates
-    pub fn set_freezing(&mut self, x: bool, y: bool, z: bool) {
-        self.freezing = [x, y, z];
+    pub fn set_freezing(&mut self, freezing: [bool; 3]) {
+        self.freezing = freezing;
     }
 
     /// Return freezing mask array for Cartesian coordinates
