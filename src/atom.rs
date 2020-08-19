@@ -1,11 +1,11 @@
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use gut::prelude::*;
 
 use crate::element::*;
 use crate::property::PropertyStore;
 // imports:1 ends here
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+// [[file:../gchemol-core.note::*base][base:1]]
 /// nalgebra 3D Vector
 pub type Vector3f = vecfx::Vector3f;
 
@@ -94,13 +94,7 @@ impl Atom {
 
     /// Set atom position in 3D Cartesian coordinates
     pub fn set_position<P: Into<Vector3f>>(&mut self, p: P) {
-        // refuse to update position of freezing atom
-        let new_position: Vector3f = p.into();
-        for (i, masked) in self.freezing.iter().enumerate() {
-            if !*masked {
-                self.position[i] = new_position[i];
-            }
-        }
+        self.position = p.into();
     }
 
     /// Return atom kind.
@@ -164,7 +158,7 @@ impl Atom {
 }
 // base:1 ends here
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*convert][convert:1]]
+// [[file:../gchemol-core.note::*convert][convert:1]]
 use std::convert::From;
 use std::str::FromStr;
 
@@ -212,7 +206,7 @@ where
 }
 // convert:1 ends here
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test_atom_basic() {
     let _ = Atom::default();
