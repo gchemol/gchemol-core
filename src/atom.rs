@@ -155,6 +155,18 @@ impl Atom {
     pub fn freezing(&self) -> [bool; 3] {
         self.freezing
     }
+
+    /// Update position of atom, without changing freezing coordinate components
+    /// (xyz)
+    pub fn update_position<P: Into<Vector3f>>(&mut self, p: P) {
+        // refuse to update position of freezing atom
+        let new_position: Vector3f = p.into();
+        for (i, masked) in self.freezing.iter().enumerate() {
+            if !*masked {
+                self.position[i] = new_position[i];
+            }
+        }
+    }
 }
 // base:1 ends here
 

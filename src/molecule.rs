@@ -1,6 +1,4 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use serde::*;
 
 use gchemol_graph::*;
@@ -15,9 +13,7 @@ use crate::element::*;
 use crate::property::PropertyStore;
 // imports:1 ends here
 
-// base
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+// [[file:../gchemol-core.note::*base][base:1]]
 type MolGraph = NxGraph<Atom, Bond>;
 
 /// Molecule is the most important data structure in gchemol, which repsents
@@ -77,9 +73,7 @@ impl Molecule {
 }
 // base:1 ends here
 
-// constructor
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*constructor][constructor:1]]
+// [[file:../gchemol-core.note::*constructor][constructor:1]]
 /// `Molecule` constructors
 impl Molecule {
     /// Create a new empty molecule with specific name
@@ -107,7 +101,6 @@ impl Molecule {
 
     /// Build `Molecule` from raw graph struct.
     pub fn from_graph(graph: MolGraph) -> Self {
-        // FIXME: serial number mapping?
         let mut mol = Self {
             graph,
             ..Default::default()
@@ -124,9 +117,7 @@ impl Molecule {
 }
 // constructor:1 ends here
 
-// basic
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*basic][basic:1]]
+// [[file:../gchemol-core.note::*basic][basic:1]]
 /// Core methods
 impl Molecule {
     /// Add atom `a` into molecule. If Atom numbered as `a` already exists in
@@ -269,9 +260,7 @@ impl Molecule {
 }
 // basic:1 ends here
 
-// edit
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*edit][edit:1]]
+// [[file:../gchemol-core.note::*edit][edit:1]]
 /// Edit `Molecule`
 impl Molecule {
     /// Read access to atom by atom serial number.
@@ -364,6 +353,19 @@ impl Molecule {
         }
     }
 
+    /// Update positions of atoms in sequential order, without changing the
+    /// freezing coordinates.
+    pub fn update_positions<T, P>(&mut self, positions: T)
+    where
+        T: IntoIterator<Item = P>,
+        P: Into<Vector3f>,
+    {
+        for (sn, p) in self.serial_numbers().zip(positions.into_iter()) {
+            let atom = self.get_atom_mut(sn).unwrap();
+            atom.update_position(p);
+        }
+    }
+
     /// Set element symbols
     pub fn set_symbols<T, S>(&mut self, symbols: T)
     where
@@ -388,9 +390,7 @@ impl Molecule {
 }
 // edit:1 ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test() {
     let mut mol = Molecule::new("test");
