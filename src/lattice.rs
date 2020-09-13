@@ -1,15 +1,11 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 pub use gchemol_lattice::Lattice;
 
 use crate::atom::Vector3f;
 use crate::molecule::Molecule;
 // imports:1 ends here
 
-// api
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::*api][api:1]]
 /// Lattice related methods
 impl Molecule {
     #[cfg(feature = "adhoc")]
@@ -73,7 +69,7 @@ impl Molecule {
     ///
     pub fn supercell(&self, sa: usize, sb: usize, sc: usize) -> Option<Molecule> {
         // add atoms by looping over three lattice directions
-        let lat = self.lattice.unwrap();
+        let lat = self.lattice?;
         let (sa, sb, sc) = (sa as isize, sb as isize, sc as isize);
         let mut atoms = vec![];
         for image in lat.replicate(0..sa, 0..sb, 0..sc) {
