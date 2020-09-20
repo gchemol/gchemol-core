@@ -366,6 +366,17 @@ impl Molecule {
         }
     }
 
+    /// Set positions of specified atoms
+    pub fn set_positions_from<T, P>(&mut self, positions: T)
+    where
+        T: IntoIterator<Item = (usize, P)>,
+        P: Into<Vector3f>,
+    {
+        for (i, p) in positions {
+            self.set_position(i, p);
+        }
+    }
+
     /// Set element symbols
     pub fn set_symbols<T, S>(&mut self, symbols: T)
     where
