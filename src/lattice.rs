@@ -44,9 +44,9 @@ impl Molecule {
             .map(|lat| self.positions().map(move |cart| lat.to_frac(cart).into()))
     }
 
-    /// Set fractional coordinates relative to unit cell.
+    /// Set fractional coordinates of atoms in sequence order.
     ///
-    /// Panics if Molecule is aperiodic structure.
+    /// Panics if Molecule is aperiodic.
     pub fn set_scaled_positions<T, P>(&mut self, scaled: T)
     where
         T: IntoIterator<Item = P>,
@@ -57,6 +57,24 @@ impl Molecule {
             .expect("cannot set scaled positions for aperiodic structure");
         let positions = scaled.into_iter().map(|frac| lat.to_cart(frac));
         self.set_positions(positions);
+    }
+
+    /// Set fractional coordinates of atoms specified in serial numbers.
+    ///
+    /// Panics if Molecule is aperiodic.
+    pub fn set_scaled_positions_from<T, P>(&mut self, scaled: T)
+    where
+        T: IntoIterator<Item = (usize, P)>,
+        P: Into<Vector3f>,
+    {
+        let lat = self
+            .lattice
+            .expect("cannot set scaled positions for aperiodic structure");
+
+        for (i, fi) in scaled {
+            let pi = lat.to_cart(fi);
+            self.set_position(i, pi);
+        }
     }
 
     #[cfg(feature = "adhoc")]
