@@ -20,7 +20,7 @@ impl Mask {
     pub fn unmask(&self, inp: &[f64], fill_value: f64) -> Vec<f64> {
         let mask = &self.mask;
 
-        assert!(inp.len() <= mask.len());
+        assert!(inp.len() <= mask.len(), "mask: unmask");
         let mut input_values = inp.into_iter().copied();
 
         mask.into_iter()
@@ -37,7 +37,7 @@ impl Mask {
     /// Return a vec with masked values removed.
     pub fn apply<T: Copy>(&self, out: &[T]) -> Vec<T> {
         let mask = &self.mask;
-        assert!(out.len() == mask.len());
+        assert!(out.len() == mask.len(), "mask: apply");
 
         out.into_iter()
             .zip(mask.into_iter())
@@ -71,6 +71,15 @@ impl FromIterator<bool> for Mask {
     }
 }
 
+impl IntoIterator for Mask {
+    type Item = bool;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.mask.into_iter()
+    }
+}
+
 impl Molecule {
     /// Create a `Mask` for freezing atoms in 1-D vec.
     pub fn freezing_atoms_mask(&self) -> Mask {
@@ -79,7 +88,7 @@ impl Molecule {
 
     /// Create a `Mask` for Cartesian coordinates (3D) of freezing atoms in flatten 1-D vec.
     pub fn freezing_coords_mask(&self) -> Mask {
-        self.atoms().flat_map(|(_, a)| a.freezing().to_vec().into_iter()).collect()
+        self.atoms().flat_map(|(_, a)| a.freezing().to_vec()).collect()
     }
 }
 

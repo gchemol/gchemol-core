@@ -353,8 +353,8 @@ impl Molecule {
         }
     }
 
-    /// Update positions of atoms in sequential order, without changing the
-    /// freezing coordinates.
+    /// Update positions of atoms in sequential order, with freezing coordinates
+    /// ignored.
     pub fn update_positions<T, P>(&mut self, positions: T)
     where
         T: IntoIterator<Item = P>,
@@ -367,12 +367,12 @@ impl Molecule {
     }
 
     /// Set positions of specified atoms
-    pub fn set_positions_from<T, P>(&mut self, positions: T)
+    pub fn set_positions_from<T, P>(&mut self, selected_positions: T)
     where
         T: IntoIterator<Item = (usize, P)>,
         P: Into<Vector3f>,
     {
-        for (i, p) in positions {
+        for (i, p) in selected_positions {
             self.set_position(i, p);
         }
     }
