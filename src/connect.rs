@@ -1,15 +1,11 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use gut::prelude::*;
 use serde::*;
 
 use crate::{Atom, Bond, BondKind, Molecule};
 // imports:1 ends here
 
-// impl/guess bonds
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*impl/guess bonds][impl/guess bonds:1]]
+// [[file:../gchemol-core.note::*impl/guess bonds][impl/guess bonds:1]]
 #[derive(Deserialize, Debug)]
 #[serde(default)]
 pub struct BondingConfig {
@@ -74,9 +70,7 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
 }
 // impl/guess bonds:1 ends here
 
-// api
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::*api][api:1]]
 /// Handling chemical bonds in `Molecule`.
 impl Molecule {
     /// Removes all existing bonds between atoms
@@ -109,7 +103,7 @@ impl Molecule {
     pub fn rebond(&mut self) {
         if self.lattice.is_some() {
             // FIXME: impl
-            unimplemented!();
+            warn!("rebond: treat as nonperiodic strucutre");
         }
 
         // remove all existing bonds
@@ -121,9 +115,7 @@ impl Molecule {
 }
 // api:1 ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test_connect() {
     // CH4 molecule
