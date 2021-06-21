@@ -1,6 +1,4 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use std::collections::HashMap;
 
 use gut::prelude::*;
@@ -11,9 +9,7 @@ use crate::atom::{Point3, Vector3f};
 use crate::{Atom, Molecule};
 // imports:1 ends here
 
-// extra properties
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*extra properties][extra properties:1]]
+// [[file:../gchemol-core.note::*extra properties][extra properties:1]]
 #[cfg(feature = "adhoc")]
 /// Extra properties for `Atom`.
 impl Atom {
@@ -41,12 +37,22 @@ impl Molecule {
             panic!("invalid sn: {}", sn);
         }
     }
+
+    /// Set momenta of atoms in sequential order.
+    pub fn set_momenta<T, M>(&mut self, momenta: T)
+    where
+        T: IntoIterator<Item = M>,
+        M: Into<Vector3f>,
+    {
+        for (sn, m) in self.serial_numbers().zip(momenta.into_iter()) {
+            let atom = self.get_atom_mut(sn).unwrap();
+            atom.set_momentum(m);
+        }
+    }
 }
 // extra properties:1 ends here
 
-// adhoc properties
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*adhoc properties][adhoc properties:1]]
+// [[file:../gchemol-core.note::*adhoc properties][adhoc properties:1]]
 /// A container storing extra information managed as key/value pairs
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct PropertyStore {
@@ -83,9 +89,7 @@ impl PropertyStore {
 }
 // adhoc properties:1 ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test_atom_store() {
     let mut x = PropertyStore::default();
