@@ -38,7 +38,24 @@ impl Molecule {
 
     /// Return the center of mass of molecule (COM).
     pub fn center_of_mass(&self) -> Point3 {
-        unimplemented!()
+        use vecfx::*;
+
+        // NOTE: dummy atom has zero mass
+        let masses: Vec<_> = self.atoms().map(|(_, a)| a.get_mass().unwrap_or_default()).collect();
+        let mut p = [0.0; 3];
+        for ([x, y, z], m) in self.positions().zip(masses.iter()) {
+            p[0] += x * m;
+            p[1] += y * m;
+            p[2] += z * m;
+        }
+
+        let s = masses.sum();
+        assert!(s.is_sign_positive(), "invalid masses: {:?}", masses);
+        p[0] /= s;
+        p[1] /= s;
+        p[2] /= s;
+
+        p
     }
 
     /// Center the molecule around its center of geometry
