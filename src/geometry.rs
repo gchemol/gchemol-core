@@ -40,8 +40,7 @@ impl Molecule {
     pub fn center_of_mass(&self) -> Point3 {
         use vecfx::*;
 
-        // NOTE: dummy atom has zero mass
-        let masses: Vec<_> = self.atoms().map(|(_, a)| a.get_mass().unwrap_or_default()).collect();
+        let masses: Vec<_> = self.masses().collect();
         let mut p = [0.0; 3];
         for ([x, y, z], m) in self.positions().zip(masses.iter()) {
             p[0] += x * m;

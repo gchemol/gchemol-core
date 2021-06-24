@@ -225,6 +225,12 @@ impl Molecule {
         self.atoms().map(move |(_, atom)| atom.symbol())
     }
 
+    /// Iterate over atom's mass ordered by atom's serial numbers. Dummy atom
+    /// has mass of zero.
+    pub fn masses(&self) -> impl Iterator<Item = f64> + '_ {
+        self.atoms().map(|(_, a)| a.get_mass().unwrap_or_default())
+    }
+
     /// Iterate over atomic numbers.
     pub fn atomic_numbers(&self) -> impl Iterator<Item = usize> + '_ {
         self.atoms().map(move |(_, atom)| atom.number())
