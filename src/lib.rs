@@ -8,7 +8,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2020-09-13 Sun 15:30>
+//       UPDATED:  <2021-06-24 Thu 10:24>
 //===============================================================================#
 
 #![deny(missing_docs)] // rustdoc will fail if there is missing docs
@@ -33,13 +33,15 @@ mod clean;
 #[cfg(feature = "adhoc")]
 mod connect;
 #[cfg(feature = "adhoc")]
+mod freeze;
+#[cfg(feature = "adhoc")]
 mod geometry;
+#[cfg(feature = "adhoc")]
+mod inertia;
 #[cfg(feature = "adhoc")]
 mod order;
 #[cfg(feature = "adhoc")]
 mod topology;
-#[cfg(feature = "adhoc")]
-mod freeze;
 
 #[cfg(feature = "adhoc")]
 pub use crate::freeze::Mask;

@@ -36,27 +36,6 @@ impl Molecule {
         p
     }
 
-    /// Return the center of mass of molecule (COM).
-    pub fn center_of_mass(&self) -> Point3 {
-        use vecfx::*;
-
-        let masses: Vec<_> = self.masses().collect();
-        let mut p = [0.0; 3];
-        for ([x, y, z], m) in self.positions().zip(masses.iter()) {
-            p[0] += x * m;
-            p[1] += y * m;
-            p[2] += z * m;
-        }
-
-        let s = masses.sum();
-        assert!(s.is_sign_positive(), "invalid masses: {:?}", masses);
-        p[0] /= s;
-        p[1] /= s;
-        p[2] /= s;
-
-        p
-    }
-
     /// Center the molecule around its center of geometry
     pub fn recenter(&mut self) {
         if self.is_periodic() {
