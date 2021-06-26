@@ -1,15 +1,11 @@
 //! Atom orders in Molecule.
 
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use crate::common::*;
 use crate::Molecule;
 // imports:1 ends here
 
-// core
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*core][core:1]]
+// [[file:../gchemol-core.note::*core][core:1]]
 impl Molecule {
     /// Node indices of internal graph object, ordered in serial numbers.
     pub(crate) fn node_indices(&self) -> impl Iterator<Item = NodeIndex> + '_ {
@@ -20,9 +16,7 @@ impl Molecule {
 }
 // core:1 ends here
 
-// api
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::*api][api:1]]
 /// Display order of `Atom` in `Molecule`
 impl Molecule {
     /// Renumber atoms consecutively from 1.
@@ -79,9 +73,7 @@ impl Molecule {
 }
 // api:1 ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test_atom_orders() {
     use crate::{Atom, Molecule};

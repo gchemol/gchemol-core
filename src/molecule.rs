@@ -289,7 +289,9 @@ impl Molecule {
     pub fn get_bond(&self, sn1: usize, sn2: usize) -> Option<&Bond> {
         if let Some(&n1) = self.get_node_index(sn1) {
             if let Some(&n2) = self.get_node_index(sn2) {
-                return Some(&self.graph[(n1, n2)]);
+                if self.graph.has_edge(n1, n2) {
+                    return Some(&self.graph[(n1, n2)]);
+                }
             }
         }
         None
@@ -299,7 +301,9 @@ impl Molecule {
     pub fn get_bond_mut(&mut self, sn1: usize, sn2: usize) -> Option<&mut Bond> {
         if let Some(&n1) = self.get_node_index(sn1) {
             if let Some(&n2) = self.get_node_index(sn2) {
-                return Some(&mut self.graph[(n1, n2)]);
+                if self.graph.has_edge(n1, n2) {
+                    return Some(&mut self.graph[(n1, n2)]);
+                }
             }
         }
         None
