@@ -273,6 +273,12 @@ impl Molecule {
     pub fn get_atom(&self, sn: usize) -> Option<&Atom> {
         self.get_node_index(sn).map(|&n| &self.graph[n])
     }
+    
+    /// Read access to atom by atom serial number. Panic if no this atom.
+    pub fn get_atom_unchecked(&self, sn: usize) -> &Atom {
+        assert!(self.has_atom(sn), "invalid atom i: {}, mol: {:?}", sn, &self);
+        self.get_atom(sn).unwrap()
+    }
 
     /// Returns true if the molecule contains atom with the given `sn`
     pub fn has_atom(&self, sn: usize) -> bool {
@@ -287,6 +293,12 @@ impl Molecule {
         } else {
             None
         }
+    }
+
+    /// Mutable access to atom by atom serial number. Panic if no this atom.
+    pub fn get_atom_unchecked_mut(&mut self, sn: usize) -> &mut Atom {
+        assert!(self.has_atom(sn), "invalid atom i: {}, mol: {:?}", sn, &self);
+        self.get_atom_mut(sn).unwrap()
     }
 
     /// Read access to bond by a pair of atoms. Return None if there is no bond
