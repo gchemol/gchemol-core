@@ -274,6 +274,11 @@ impl Molecule {
         self.get_node_index(sn).map(|&n| &self.graph[n])
     }
 
+    /// Returns true if the molecule contains atom with the given `sn`
+    pub fn has_atom(&self, sn: usize) -> bool {
+        self.mapping.contains_left(&sn)
+    }
+
     /// Mutable access to atom by atom serial number.
     pub fn get_atom_mut(&mut self, sn: usize) -> Option<&mut Atom> {
         // self.get_node_index(sn).map(move |&n| &mut self.graph[n])
@@ -295,6 +300,11 @@ impl Molecule {
             }
         }
         None
+    }
+
+    /// Returns true if the molcule contains bond between atom `sn1` and `sn2`
+    pub fn has_bond(&self, sn1: usize, sn2: usize) -> bool {
+        self.get_bond(sn1, sn2).is_some()
     }
 
     /// Mutable access to bond by a pair of atoms.
