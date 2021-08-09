@@ -14,39 +14,46 @@ use crate::{Atom, Molecule};
 /// Extra properties for `Atom`.
 impl Atom {
     /// Vector quantity equal to the product of mass and velocity.
-    pub fn momentum(&self) -> Point3 {
-        self.momentum.into()
+    pub fn get_momentum(&self) -> Option<Point3> {
+        self.mass.map(|m| (m * self.velocity).into())
     }
 
-    /// TODO: momentum, momenta
-    pub fn set_momentum<P: Into<Vector3f>>(&mut self, m: P) {
-        self.momentum = m.into();
+    /// Set atom velocity.
+    pub fn set_velocity<P: Into<Vector3f>>(&mut self, m: P) {
+        self.velocity = m.into();
+    }
+
+    /// Return atom velocity
+    pub fn velocity(&self) -> Point3 {
+        self.velocity.into()
     }
 }
 
 #[cfg(feature = "adhoc")]
 /// Extra properties for `Molecule`.
 impl Molecule {
+    /// Set atom `sn` 's velocity as `m`
+    ///
     /// # Panics
     ///
     /// * panic if there is no atom associated with `sn`.
-    pub fn set_momentum<P: Into<Vector3f>>(&mut self, sn: usize, m: P) {
+    pub fn set_velocity<P: Into<Vector3f>>(&mut self, sn: usize, m: P) {
         if let Some(atom) = self.get_atom_mut(sn) {
-            atom.set_momentum(m);
+            atom.set_velocity(m);
         } else {
             panic!("invalid sn: {}", sn);
         }
     }
 
-    /// Set momenta of atoms in sequential order.
-    pub fn set_momenta<T, M>(&mut self, momenta: T)
+    /// Set velocities of atoms in sequential order.
+    pub fn set_velocities<T, M>(&mut self, velocities: T)
     where
         T: IntoIterator<Item = M>,
         M: Into<Vector3f>,
     {
-        for (sn, m) in self.serial_numbers().zip(momenta.into_iter()) {
+        for (sn, m) in self.serial_numbers().zip(velocities.into_iter()) {
             let atom = self.get_atom_mut(sn).unwrap();
-            atom.set_momentum(m);
+            atom.set_velocity(m);
         }
     }
 }

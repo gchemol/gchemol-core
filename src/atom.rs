@@ -39,9 +39,6 @@ pub struct Atom {
     /// Atomic mass
     pub(crate) mass: Option<f64>,
 
-    /// Atomic momentum vector
-    pub(crate) momentum: Vector3f,
-
     /// Atomic partial charge
     pub(crate) partial_charge: Option<f64>,
 
@@ -55,7 +52,6 @@ impl Default for Atom {
             properties: PropertyStore::default(),
             kind: "C".into(),
             position: Vector3f::new(0.0, 0.0, 0.0),
-            momentum: Vector3f::new(0.0, 0.0, 0.0),
             velocity: Vector3f::new(0.0, 0.0, 0.0),
             partial_charge: None,
 
@@ -156,8 +152,8 @@ impl Atom {
         self.freezing
     }
 
-    /// Update position of atom, without changing freezing coordinate components
-    /// (xyz)
+    /// Update Cartesian coordinates partially, without changing its freezing
+    /// coordinate components (xyz).
     pub fn update_position<P: Into<Vector3f>>(&mut self, p: P) {
         // refuse to update position of freezing atom
         let new_position: Vector3f = p.into();
