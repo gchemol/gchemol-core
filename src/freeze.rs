@@ -57,6 +57,17 @@ impl Mask {
         }
     }
 
+    /// Return a vec by mapping the masked values in `out` as the `new` values.
+    pub fn map_as<T: Copy>(&self, out: &[T], new: T) -> Vec<T> {
+        let mask = &self.mask;
+        assert!(out.len() == mask.len(), "mask: apply");
+
+        out.into_iter()
+            .zip(mask.into_iter())
+            .map(|(&o, &m)| if m { new } else { o })
+            .collect()
+    }
+
     /// Inverted `Mask`
     pub fn inverted(&self) -> Self {
         self.mask.iter().map(|x| !x).collect()
@@ -107,4 +118,12 @@ fn test_mask() {
     let values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
     let coords_opt_masked = mask_coords_opt.apply(&values);
     assert_eq!(coords_opt_masked.len(), 3);
+
+    // map masked values as zero
+    let new = mask_coords_opt.map_as(&values, 0.0);
+    assert_eq!(new[0], 1.0, "{:?}", new);
+    assert_eq!(new[1], 0.0, "{:?}", new);
+    assert_eq!(new[2], 3.0, "{:?}", new);
+    assert_eq!(new[3], 4.0, "{:?}", new);
+    assert_eq!(new[4], 0.0, "{:?}", new);
 }
