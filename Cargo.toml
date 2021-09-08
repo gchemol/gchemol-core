@@ -1,0 +1,28 @@
+# [[file:gchemol-core.note::*cargo][cargo:1]]
+[package]
+name = "gchemol-core"
+version = "0.0.43"
+edition = "2018"
+authors = ["Wenping Guo <ybyygu@gmail.com>"]
+description = "Core chemical objects for gchemol"
+homepage = "https://github.com/gchemol/gchemol-core"
+repository = "https://github.com/gchemol/gchemol-core"
+license = "MIT OR Apache-2.0"
+exclude = ["bin/*", "docs/*", "ltxpng/*", "data/*"]
+
+[dependencies]
+serde = {version="1", features = ["derive"]}
+serde_json = "1"
+envy = "0.4"
+bimap = { version = "0.6", features = ["serde"]}
+vecfx = { version = "0.1.2", features = ["nalgebra"] }
+gut = { version = "0.1.2", package="gchemol-gut" }
+neighbors = { version = "0.1", package="gchemol-neighbors" }
+gchemol-graph = "0.1.1"
+gchemol-lattice = "0.1"
+
+[dev-dependencies]
+
+[features]
+adhoc = ["gchemol-graph/adhoc"] # for adhoc hacking
+# cargo:1 ends here
