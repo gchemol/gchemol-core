@@ -66,7 +66,8 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     nh.update(points);
 
     let mut bonds = vec![];
-    let d_bonding_cutoff = 3.0;
+    // NOTE: 1.6 is the largest cov radius of all elements (jmol)
+    let d_bonding_cutoff = 1.6 * 2.0 + 0.4;
     for (i, atom_i) in mol.atoms() {
         let nns = nh.neighbors(i, d_bonding_cutoff);
         for n in nns {

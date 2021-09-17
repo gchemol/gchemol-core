@@ -182,7 +182,7 @@ fn get_vdw_radius(element_number: usize) -> Option<f64> {
 
 // Return a radius for auto bond
 fn get_bonding_radius(element_number: usize) -> Option<f64> {
-    BONDING_RADII.get(element_number).copied()
+    BONDING_RADII.get(element_number - 1).copied()
 }
 
 // masses
