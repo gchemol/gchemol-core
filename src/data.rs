@@ -9,7 +9,6 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 14:40>
-//       UPDATED:  <2020-02-24 Mon 16:33>
 //===============================================================================#
 
 use crate::{Atom, AtomKind, Molecule};
@@ -142,6 +141,17 @@ const RADII_DATA: [[f64; 4]; 118] = [
     [1.57, 1.57, 1.57, 2.46],
 ];
 
+// Following data are taken from jmol for auto bonding, which works better for
+// detecting chemical bonds, especially for metals.
+const BONDING_RADII: [f64; 109] = [
+    0.230, 0.930, 0.680, 0.350, 0.830, 0.680, 0.680, 0.680, 0.640, 1.120, 0.970, 1.100, 1.350, 1.200, 0.750, 1.020, 0.990, 1.570, 1.330,
+    0.990, 1.440, 1.470, 1.330, 1.350, 1.350, 1.340, 1.330, 1.500, 1.520, 1.450, 1.220, 1.170, 1.210, 1.220, 1.210, 1.910, 1.470, 1.120,
+    1.780, 1.560, 1.480, 1.470, 1.350, 1.400, 1.450, 1.500, 1.590, 1.690, 1.630, 1.460, 1.460, 1.470, 1.400, 1.980, 1.670, 1.340, 1.870,
+    1.830, 1.820, 1.810, 1.800, 1.800, 1.990, 1.790, 1.760, 1.750, 1.740, 1.730, 1.720, 1.940, 1.720, 1.570, 1.430, 1.370, 1.350, 1.370,
+    1.320, 1.500, 1.500, 1.700, 1.550, 1.540, 1.540, 1.680, 1.700, 2.400, 2.000, 1.900, 1.880, 1.790, 1.610, 1.580, 1.550, 1.530, 1.510,
+    1.500, 1.500, 1.500, 1.500, 1.500, 1.500, 1.500, 1.500, 1.600, 1.600, 1.600, 1.600, 1.600, 1.600,
+];
+
 /// Return covalent radius for single, double, or triple bonds
 fn get_cov_radius(element_number: usize, bond_order: usize) -> Option<f64> {
     if element_number > 0 && element_number <= RADII_DATA.len() {
@@ -168,6 +178,11 @@ fn get_vdw_radius(element_number: usize) -> Option<f64> {
         return Some(r);
     }
     None
+}
+
+// Return a radius for auto bond
+fn get_bonding_radius(element_number: usize) -> Option<f64> {
+    BONDING_RADII.get(element_number).copied()
 }
 
 // masses
@@ -212,6 +227,11 @@ impl Atom {
     /// Return None if no data available
     pub fn get_vdw_radius(&self) -> Option<f64> {
         get_vdw_radius(self.number())
+    }
+
+    /// Return bonding radius of this element if available
+    pub fn get_bonding_radius(&self) -> Option<f64> {
+        get_bonding_radius(self.number())
     }
 
     #[deprecated(note = "use get_cov_radius instead")]

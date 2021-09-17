@@ -55,7 +55,7 @@ impl Default for Atom {
             velocity: Vector3f::new(0.0, 0.0, 0.0),
             partial_charge: None,
 
-            // FIXME
+            // FIXME: not so sure these fields are necessary
             mass: None,
             label: None,
             freezing: [false; 3],
