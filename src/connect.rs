@@ -41,6 +41,23 @@ fn guess_bond(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
     }
 }
 
+// guess bonds in Jmol style
+fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
+    // JMOL: DEFAULT_BOND_TOLERANCE
+    let bond_tolerance = 0.45;
+    match (atom1.get_bonding_radius(), atom2.get_bonding_radius()) {
+        (Some(r1), Some(r2)) => {
+            let rcut = r1 + r2 + bond_tolerance;
+            if distance > rcut {
+                Bond::dummy()
+            } else {
+                Bond::single()
+            }
+        }
+        _ => Bond::dummy(),
+    }
+}
+
 /// Guess if bonds exist between two atoms based on their distance.
 pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     // FIXME: lattice?
@@ -49,7 +66,7 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     nh.update(points);
 
     let mut bonds = vec![];
-    let d_bonding_cutoff = 2.5;
+    let d_bonding_cutoff = 3.0;
     for (i, atom_i) in mol.atoms() {
         let nns = nh.neighbors(i, d_bonding_cutoff);
         for n in nns {
@@ -59,7 +76,8 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
                 continue;
             }
             let atom_j = mol.get_atom(j).unwrap();
-            let bond = guess_bond(atom_i, atom_j, n.distance);
+            // let bond = guess_bond(atom_i, atom_j, n.distance);
+            let bond = guess_bond_jmol(atom_i, atom_j, n.distance);
             if !bond.is_dummy() {
                 bonds.push((i, j, bond));
             }
