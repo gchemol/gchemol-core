@@ -8,7 +8,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2021-06-24 Thu 10:24>
+//       UPDATED:  <2021-10-06 Wed 10:03>
 //===============================================================================#
 
 #![deny(missing_docs)] // rustdoc will fail if there is missing docs
@@ -18,7 +18,7 @@
 //!# Core chemical objects for gchemol
 // header:3 ends here
 
-// [[file:../gchemol-core.note::*mods][mods:1]]
+// [[file:../gchemol-core.note::92c9c7da][92c9c7da]]
 mod atom;
 mod bond;
 mod data;
@@ -45,7 +45,7 @@ mod topology;
 
 #[cfg(feature = "adhoc")]
 pub use crate::freeze::Mask;
-// mods:1 ends here
+// 92c9c7da ends here
 
 // [[file:../gchemol-core.note::*common][common:1]]
 /// shared dependencies in crate

@@ -5,7 +5,7 @@ use serde::*;
 use crate::{Atom, Bond, BondKind, Molecule};
 // imports:1 ends here
 
-// [[file:../gchemol-core.note::*impl/guess bonds][impl/guess bonds:1]]
+// [[file:../gchemol-core.note::270a1c57][270a1c57]]
 #[derive(Deserialize, Debug)]
 #[serde(default)]
 pub struct BondingConfig {
@@ -27,9 +27,9 @@ fn guess_bond(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
     });
 
     match (atom1.get_vdw_radius(), atom2.get_vdw_radius()) {
-        (Some(cr1), Some(cr2)) => {
+        (Some(r1), Some(r2)) => {
             let r = config.bonding_ratio;
-            let rcut = (cr1 + cr2) * r;
+            let rcut = (r1 + r2) * r;
             if distance > rcut {
                 Bond::dummy()
             } else {
@@ -87,7 +87,7 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
 
     bonds
 }
-// impl/guess bonds:1 ends here
+// 270a1c57 ends here
 
 // [[file:../gchemol-core.note::*api][api:1]]
 /// Handling chemical bonds in `Molecule`.

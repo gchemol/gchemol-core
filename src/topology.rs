@@ -1,12 +1,20 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use crate::Molecule;
 // imports:1 ends here
 
-// api
+// [[file:../gchemol-core.note::51a9048d][51a9048d]]
+fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Molecule> {
+    assert!(!atoms.is_empty(), "invalid atom numbers: {:?}", atoms);
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*api][api:1]]
+    let nodes: Option<Vec<_>> = atoms.iter().map(|&a| mol.get_node_index(a).copied()).collect();
+    let nodes = nodes?;
+    let subgraph = mol.graph().subgraph(&nodes);
+
+    Molecule::from_graph(subgraph).into()
+}
+// 51a9048d ends here
+
+// [[file:../gchemol-core.note::687744ec][687744ec]]
 use gchemol_graph::petgraph::algo;
 
 /// High level topology structure of `Molecule`.
@@ -52,12 +60,15 @@ impl Molecule {
         let node = self.node_index(a);
         self.graph.neighbors(node).map(move |b| self.atom_sn(b))
     }
+
+    /// Return a sub molecule induced by `atoms` in parent molecule.
+    pub fn get_sub_molecule(&self, atoms: &[usize]) -> Option<Molecule> {
+        create_submolecule_from_atoms(&self, atoms)
+    }
 }
-// api:1 ends here
+// 687744ec ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::cf82e7a7][cf82e7a7]]
 #[test]
 fn test_topo_path() {
     use crate::Atom;
@@ -73,5 +84,12 @@ fn test_topo_path() {
 
     let p = mol.path_between(1, 2);
     assert_eq!(p, Some(vec![1, 2]));
+
+    let submol = mol.get_sub_molecule(&[1, 2, 3]).unwrap();
+    assert_eq!(submol.natoms(), 3);
+    assert_eq!(submol.nbonds(), 2);
+    assert!(submol.has_bond(1, 2));
+    assert!(submol.has_bond(1, 3));
+    assert!(!submol.has_bond(2, 3));
 }
-// test:1 ends here
+// cf82e7a7 ends here
