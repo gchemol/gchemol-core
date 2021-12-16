@@ -9,7 +9,7 @@ use crate::atom::{Point3, Vector3f};
 use crate::{Atom, Molecule};
 // imports:1 ends here
 
-// [[file:../gchemol-core.note::*extra properties][extra properties:1]]
+// [[file:../gchemol-core.note::2484a0c8][2484a0c8]]
 #[cfg(feature = "adhoc")]
 /// Extra properties for `Atom`.
 impl Atom {
@@ -56,8 +56,13 @@ impl Molecule {
             atom.set_velocity(m);
         }
     }
+
+    /// Return an iterator over atom velocities.
+    pub fn velocities(&self) -> impl Iterator<Item = Point3> + '_ {
+        self.atoms().map(move |(_, atom)| atom.velocity())
+    }
 }
-// extra properties:1 ends here
+// 2484a0c8 ends here
 
 // [[file:../gchemol-core.note::*adhoc properties][adhoc properties:1]]
 /// A container storing extra information managed as key/value pairs
