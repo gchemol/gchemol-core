@@ -6,6 +6,7 @@ use gut::prelude::*;
 use vecfx::*;
 
 // impl
+// #+name: bdeda56d
 
 use std::iter::{FromIterator, IntoIterator};
 
@@ -37,7 +38,7 @@ impl Mask {
     /// Return a vec with masked values removed.
     pub fn apply<T: Copy>(&self, out: &[T]) -> Vec<T> {
         let mask = &self.mask;
-        assert!(out.len() == mask.len(), "mask: apply");
+        assert_eq!(out.len(), mask.len(), "mask: apply");
 
         out.into_iter()
             .zip(mask.into_iter())
