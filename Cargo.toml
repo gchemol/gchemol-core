@@ -22,6 +22,8 @@ gchemol-graph = "0.1.1"
 gchemol-lattice = "0.1"
 
 [dev-dependencies]
+# for tests only
+# gchemol = { version = "0.0.42" }
 
 [features]
 adhoc = ["gchemol-graph/adhoc"] # for adhoc hacking

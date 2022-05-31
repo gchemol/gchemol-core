@@ -1,11 +1,12 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::735b5f39][735b5f39]]
 pub use gchemol_lattice::Lattice;
 
 use crate::atom::Vector3f;
+use crate::common::*;
 use crate::molecule::Molecule;
-// imports:1 ends here
+// 735b5f39 ends here
 
-// [[file:../gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::*core][core:1]]
 /// Lattice related methods
 impl Molecule {
     #[cfg(feature = "adhoc")]
@@ -113,4 +114,39 @@ impl Molecule {
         Some(mol_new)
     }
 }
-// api:1 ends here
+// core:1 ends here
+
+// [[file:../gchemol-core.note::599d9ac9][599d9ac9]]
+impl Molecule {
+    /// Create a `Lattice` from the minimal bounding box of the `Molecule`
+    /// extended by a positive value of `padding`. NOTE: padding has to be large
+    /// enough (> 0.5) to avoid self interaction with its periodic mirror.
+    pub fn set_lattice_from_bounding_box(&mut self, padding: f64) {
+        self.recenter();
+        let [a, b, c] = self.bounding_box(padding);
+        let center = [a / 2.0, b / 2.0, c / 2.0];
+        self.translate(center);
+        let mat = [[a, 0.0, 0.0], [0.0, b, 0.0], [0.0, 0.0, c]];
+        let lat = Lattice::new(mat);
+        self.set_lattice(lat);
+    }
+
+    /// Return minimal bounding box in x, y, z directions
+    pub fn bounding_box(&self, padding: f64) -> [f64; 3] {
+        use vecfx::*;
+
+        assert!(padding.is_sign_positive(), "invalid scale factor: {padding}");
+        let xmax = self.positions().map(|[x, _, _]| x).float_max();
+        let xmin = self.positions().map(|[x, _, _]| x).float_min();
+        let ymax = self.positions().map(|[_, y, _]| y).float_max();
+        let ymin = self.positions().map(|[_, y, _]| y).float_min();
+        let zmax = self.positions().map(|[_, _, z]| z).float_max();
+        let zmin = self.positions().map(|[_, _, z]| z).float_min();
+
+        let a = xmax - xmin + 2.0 * padding;
+        let b = ymax - ymin + 2.0 * padding;
+        let c = zmax - zmin + 2.0 * padding;
+        [a, b, c]
+    }
+}
+// 599d9ac9 ends here
