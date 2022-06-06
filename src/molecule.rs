@@ -266,14 +266,14 @@ impl Molecule {
 }
 // basic:1 ends here
 
-// [[file:../gchemol-core.note::*edit][edit:1]]
+// [[file:../gchemol-core.note::61192a00][61192a00]]
 /// Edit `Molecule`
 impl Molecule {
     /// Read access to atom by atom serial number.
     pub fn get_atom(&self, sn: usize) -> Option<&Atom> {
         self.get_node_index(sn).map(|&n| &self.graph[n])
     }
-    
+
     /// Read access to atom by atom serial number. Panic if no this atom.
     pub fn get_atom_unchecked(&self, sn: usize) -> &Atom {
         assert!(self.has_atom(sn), "invalid atom i: {}, mol: {:?}", sn, &self);
@@ -379,10 +379,13 @@ impl Molecule {
         T: IntoIterator<Item = P>,
         P: Into<Vector3f>,
     {
+        let mut n = 0;
         for (sn, p) in self.serial_numbers().zip(positions.into_iter()) {
             let atom = self.get_atom_mut(sn).unwrap();
+            n += 1;
             atom.set_position(p);
         }
+        assert_eq!(n, self.natoms(), "invalid number of input positions");
     }
 
     /// Update positions of atoms in sequential order, with freezing coordinates
@@ -392,10 +395,13 @@ impl Molecule {
         T: IntoIterator<Item = P>,
         P: Into<Vector3f>,
     {
+        let mut n = 0;
         for (sn, p) in self.serial_numbers().zip(positions.into_iter()) {
             let atom = self.get_atom_mut(sn).unwrap();
+            n += 1;
             atom.update_position(p);
         }
+        assert_eq!(n, self.natoms(), "invalid number of input positions");
     }
 
     /// Set positions of specified atoms
@@ -431,7 +437,7 @@ impl Molecule {
         unimplemented!()
     }
 }
-// edit:1 ends here
+// 61192a00 ends here
 
 // [[file:../gchemol-core.note::*test][test:1]]
 #[test]
