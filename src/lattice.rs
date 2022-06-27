@@ -6,7 +6,7 @@ use crate::common::*;
 use crate::molecule::Molecule;
 // 735b5f39 ends here
 
-// [[file:../gchemol-core.note::*core][core:1]]
+// [[file:../gchemol-core.note::a86668b2][a86668b2]]
 /// Lattice related methods
 impl Molecule {
     #[cfg(feature = "adhoc")]
@@ -41,8 +41,7 @@ impl Molecule {
     /// Return fractional coordinates relative to unit cell. Return None if not
     /// a periodic structure
     pub fn get_scaled_positions(&self) -> Option<impl Iterator<Item = [f64; 3]> + '_> {
-        self.lattice
-            .map(|lat| self.positions().map(move |cart| lat.to_frac(cart).into()))
+        self.lattice.map(|lat| self.positions().map(move |cart| lat.to_frac(cart).into()))
     }
 
     /// Set fractional coordinates of atoms in sequence order.
@@ -53,9 +52,7 @@ impl Molecule {
         T: IntoIterator<Item = P>,
         P: Into<Vector3f>,
     {
-        let lat = self
-            .lattice
-            .expect("cannot set scaled positions for aperiodic structure");
+        let lat = self.lattice.expect("cannot set scaled positions for aperiodic structure");
         let positions = scaled.into_iter().map(|frac| lat.to_cart(frac));
         self.set_positions(positions);
     }
@@ -68,9 +65,7 @@ impl Molecule {
         T: IntoIterator<Item = (usize, P)>,
         P: Into<Vector3f>,
     {
-        let lat = self
-            .lattice
-            .expect("cannot set scaled positions for aperiodic structure");
+        let lat = self.lattice.expect("cannot set scaled positions for aperiodic structure");
 
         for (i, fi) in scaled {
             let pi = lat.to_cart(fi);
@@ -109,12 +104,13 @@ impl Molecule {
                 v[i] *= size[i] as f64;
             }
         }
+        mol_new.name = self.name.to_string();
 
         mol_new.lattice = Some(Lattice::new(vabc));
         Some(mol_new)
     }
 }
-// core:1 ends here
+// a86668b2 ends here
 
 // [[file:../gchemol-core.note::599d9ac9][599d9ac9]]
 impl Molecule {
