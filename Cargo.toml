@@ -16,7 +16,7 @@ serde_json = "1"
 envy = "0.4"
 bimap = { version = "0.6", features = ["serde"]}
 vecfx = { version = "0.1.2", features = ["nalgebra"] }
-gut = { version = "0.2", package="gchemol-gut" }
+gut = { version = "0.4", package="gchemol-gut" }
 neighbors = { version = "0.1", package="gchemol-neighbors" }
 gchemol-graph = "0.1.1"
 gchemol-lattice = "0.1"
