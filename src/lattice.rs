@@ -114,6 +114,7 @@ impl Molecule {
 
 // [[file:../gchemol-core.note::599d9ac9][599d9ac9]]
 impl Molecule {
+    #[cfg(feature = "adhoc")]
     /// Create a `Lattice` from the minimal bounding box of the `Molecule`
     /// extended by a positive value of `padding`. NOTE: padding has to be large
     /// enough (> 0.5) to avoid self interaction with its periodic mirror.
