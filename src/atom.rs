@@ -5,7 +5,7 @@ use crate::element::*;
 use crate::property::PropertyStore;
 // imports:1 ends here
 
-// [[file:../gchemol-core.note::*base][base:1]]
+// [[file:../gchemol-core.note::d14b8035][d14b8035]]
 /// nalgebra 3D Vector
 pub type Vector3f = vecfx::Vector3f;
 
@@ -55,7 +55,7 @@ impl Default for Atom {
             velocity: Vector3f::new(0.0, 0.0, 0.0),
             partial_charge: None,
 
-            // FIXME
+            // FIXME: not so sure these fields are necessary
             mass: None,
             label: None,
             freezing: [false; 3],
@@ -164,7 +164,7 @@ impl Atom {
         }
     }
 }
-// base:1 ends here
+// d14b8035 ends here
 
 // [[file:../gchemol-core.note::*convert][convert:1]]
 use std::convert::From;

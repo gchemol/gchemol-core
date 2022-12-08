@@ -5,7 +5,7 @@ use serde::*;
 use crate::{Atom, Bond, BondKind, Molecule};
 // imports:1 ends here
 
-// [[file:../gchemol-core.note::*impl/guess bonds][impl/guess bonds:1]]
+// [[file:../gchemol-core.note::270a1c57][270a1c57]]
 #[derive(Deserialize, Debug)]
 #[serde(default)]
 pub struct BondingConfig {
@@ -16,7 +16,9 @@ pub struct BondingConfig {
 impl Default for BondingConfig {
     fn default() -> Self {
         // same value as mdanalysis
-        Self { bonding_ratio: 0.55 }
+        Self {
+            bonding_ratio: 0.55,
+        }
     }
 }
 
@@ -27,13 +29,30 @@ fn guess_bond(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
     });
 
     match (atom1.get_vdw_radius(), atom2.get_vdw_radius()) {
-        (Some(cr1), Some(cr2)) => {
+        (Some(r1), Some(r2)) => {
             let r = config.bonding_ratio;
-            let rcut = (cr1 + cr2) * r;
+            let rcut = (r1 + r2) * r;
             if distance > rcut {
                 Bond::dummy()
             } else {
                 // FIXME: guess bond type
+                Bond::single()
+            }
+        }
+        _ => Bond::dummy(),
+    }
+}
+
+// guess bonds in Jmol style
+fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
+    // JMOL: DEFAULT_BOND_TOLERANCE
+    let bond_tolerance = 0.45;
+    match (atom1.get_bonding_radius(), atom2.get_bonding_radius()) {
+        (Some(r1), Some(r2)) => {
+            let rcut = r1 + r2 + bond_tolerance;
+            if distance > rcut {
+                Bond::dummy()
+            } else {
                 Bond::single()
             }
         }
@@ -47,19 +66,35 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     let mut nh = neighbors::Neighborhood::new();
     let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
     nh.update(points);
+    // for molecule with periodic structure
+    if let Some(lat) = mol.get_lattice() {
+        nh.set_lattice(lat.matrix().into());
+    }
 
     let mut bonds = vec![];
-    let d_bonding_cutoff = 2.5;
+    // NOTE: 1.6 is the largest cov radius of all elements (jmol)
+    let d_bonding_cutoff = 1.6 * 2.0 + 0.4;
     for (i, atom_i) in mol.atoms() {
-        let nns = nh.neighbors(i, d_bonding_cutoff);
-        for n in nns {
+        // unique neighbors of `i` no double counting
+        let local_neighbors_uniq = nh.neighbors(i, d_bonding_cutoff).filter(|n| n.node > i);
+        let mut connected = std::collections::HashMap::new();
+        for n in local_neighbors_uniq {
             let j = n.node;
-            // avoid double counting
-            if i >= j {
-                continue;
-            }
+            // use minimum image convention for periodic structure: we only
+            // count the bond between `i` and `j` calcualted with the nearest
+            // image of atom `j`
+            connected
+                .entry(j)
+                .and_modify(|dij| {
+                    if n.distance < *dij {
+                        *dij = n.distance;
+                    }
+                })
+                .or_insert(n.distance);
+        }
+        for (j, dij) in connected {
             let atom_j = mol.get_atom(j).unwrap();
-            let bond = guess_bond(atom_i, atom_j, n.distance);
+            let bond = guess_bond_jmol(atom_i, atom_j, dij);
             if !bond.is_dummy() {
                 bonds.push((i, j, bond));
             }
@@ -68,9 +103,9 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
 
     bonds
 }
-// impl/guess bonds:1 ends here
+// 270a1c57 ends here
 
-// [[file:../gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::96d22124][96d22124]]
 /// Handling chemical bonds in `Molecule`.
 impl Molecule {
     /// Removes all existing bonds between atoms
@@ -99,13 +134,9 @@ impl Molecule {
     }
 
     /// Recalculates all bonds in molecule based on interatomic distances and
-    /// covalent radii.
+    /// covalent radii. For periodic system, the bonds are determined by
+    /// applying miniumu image convention.
     pub fn rebond(&mut self) {
-        if self.lattice.is_some() {
-            // FIXME: impl
-            warn!("rebond: treat as nonperiodic strucutre");
-        }
-
         // remove all existing bonds
         self.unbound();
         let bonds = guess_bonds(&self);
@@ -113,9 +144,9 @@ impl Molecule {
         self.add_bonds_from(bonds);
     }
 }
-// api:1 ends here
+// 96d22124 ends here
 
-// [[file:../gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::858392dd][858392dd]]
 #[test]
 fn test_connect() {
     // CH4 molecule
@@ -129,5 +160,36 @@ fn test_connect() {
     assert_eq!(mol.nbonds(), 0);
     mol.rebond();
     assert_eq!(mol.nbonds(), 4);
+
+    let coords = "\
+Si   0.000000     0.000000     0.000000
+Si   0.000000     2.715350     2.715350
+Si   2.715350     0.000000     2.715350
+Si   2.715350     2.715350     0.000000
+Si   4.073025     1.357675     4.073025
+Si   1.357675     1.357675     1.357675
+Si   1.357675     4.073025     4.073025
+Si   4.073025     4.073025     1.357675";
+
+    for line in coords.lines() {
+        let atom: Atom = line.parse().unwrap();
+    }
+    let atoms: Vec<Atom> = coords
+        .lines()
+        .map(|line| line.parse().unwrap())
+        .collect_vec();
+
+    let mut mol = Molecule::from_atoms(atoms);
+    let mut lat = crate::Lattice::from_params(5.430700, 5.430700, 5.430700, 90.0, 90.0, 90.0);
+    mol.set_lattice(lat);
+    assert_eq!(mol.natoms(), 8);
+    assert!(mol.is_periodic());
+    mol.rebond();
+    assert_eq!(mol.nbonds(), 16);
+    let connected = mol.connected(1).collect_vec();
+    assert_eq!(connected.len(), 4);
+    for x in [5, 6, 7, 8] {
+        assert!(connected.contains(&x));
+    }
 }
-// test:1 ends here
+// 858392dd ends here
