@@ -8,7 +8,7 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <2021-10-06 Wed 10:03>
+//       UPDATED:  <>
 //===============================================================================#
 
 #![deny(missing_docs)] // rustdoc will fail if there is missing docs
@@ -27,6 +27,7 @@ mod formula;
 mod lattice;
 mod molecule;
 mod property;
+mod ring;
 
 #[cfg(feature = "adhoc")]
 mod clean;
