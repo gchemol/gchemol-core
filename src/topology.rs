@@ -4,8 +4,6 @@ use crate::Molecule;
 
 // [[file:../gchemol-core.note::51a9048d][51a9048d]]
 fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Molecule> {
-    assert!(!atoms.is_empty(), "invalid atom numbers: {:?}", atoms);
-
     let nodes: Option<Vec<_>> = atoms.iter().map(|&a| mol.get_node_index(a).copied()).collect();
     let nodes = nodes?;
     let subgraph = mol.graph().subgraph(&nodes);
@@ -61,7 +59,9 @@ impl Molecule {
         self.graph.neighbors(node).map(move |b| self.atom_sn(b))
     }
 
-    /// Return a sub molecule induced by `atoms` in parent molecule.
+    /// Return a sub molecule induced by `atoms` in parent
+    /// molecule. Return None if atom serial numbers are
+    /// invalid. Return an empty Molecule if `atoms` empty.
     pub fn get_sub_molecule(&self, atoms: &[usize]) -> Option<Molecule> {
         create_submolecule_from_atoms(&self, atoms)
     }
@@ -84,6 +84,10 @@ fn test_topo_path() {
 
     let p = mol.path_between(1, 2);
     assert_eq!(p, Some(vec![1, 2]));
+
+    let empty = mol.get_sub_molecule(&[]);
+    assert!(empty.is_some());
+    assert_eq!(empty.unwrap().natoms(), 0);
 
     let submol = mol.get_sub_molecule(&[1, 2, 3]).unwrap();
     assert_eq!(submol.natoms(), 3);
