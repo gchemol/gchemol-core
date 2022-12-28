@@ -6,9 +6,17 @@ use crate::Molecule;
 fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Molecule> {
     let nodes: Option<Vec<_>> = atoms.iter().map(|&a| mol.get_node_index(a).copied()).collect();
     let nodes = nodes?;
-    let subgraph = mol.graph().subgraph(&nodes);
+    let graph = mol.graph().subgraph(&nodes);
 
-    Molecule::from_graph(subgraph).into()
+    let mut mol = Molecule { graph, ..Default::default() };
+
+    // create serial number mapping
+    let nodes = mol.graph.node_indices();
+    for (&sn, n) in atoms.iter().zip(nodes) {
+        mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
+    }
+
+    mol.into()
 }
 // 51a9048d ends here
 
@@ -62,6 +70,9 @@ impl Molecule {
     /// Return a sub molecule induced by `atoms` in parent
     /// molecule. Return None if atom serial numbers are
     /// invalid. Return an empty Molecule if `atoms` empty.
+    ///
+    /// # NOTE
+    /// * The sub molecule shares the same numbering system with its parent.
     pub fn get_sub_molecule(&self, atoms: &[usize]) -> Option<Molecule> {
         create_submolecule_from_atoms(&self, atoms)
     }
@@ -89,11 +100,15 @@ fn test_topo_path() {
     assert!(empty.is_some());
     assert_eq!(empty.unwrap().natoms(), 0);
 
-    let submol = mol.get_sub_molecule(&[1, 2, 3]).unwrap();
+    let submol = mol.get_sub_molecule(&[1, 2, 4]).unwrap();
     assert_eq!(submol.natoms(), 3);
     assert_eq!(submol.nbonds(), 2);
     assert!(submol.has_bond(1, 2));
-    assert!(submol.has_bond(1, 3));
-    assert!(!submol.has_bond(2, 3));
+    assert!(submol.has_bond(1, 4));
+    assert!(!submol.has_bond(2, 4));
+
+    let a4_parent = mol.get_atom_unchecked(4);
+    let a4_child = submol.get_atom_unchecked(4);
+    assert_eq!(a4_parent.position(), a4_child.position());
 }
 // cf82e7a7 ends here

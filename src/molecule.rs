@@ -73,7 +73,7 @@ impl Molecule {
 }
 // base:1 ends here
 
-// [[file:../gchemol-core.note::*constructor][constructor:1]]
+// [[file:../gchemol-core.note::29c55361][29c55361]]
 /// `Molecule` constructors
 impl Molecule {
     /// Create a new empty molecule with specific name
@@ -101,21 +101,18 @@ impl Molecule {
 
     /// Build `Molecule` from raw graph struct.
     pub fn from_graph(graph: MolGraph) -> Self {
-        let mut mol = Self {
-            graph,
-            ..Default::default()
-        };
+        let mut mol = Self { graph, ..Default::default() };
 
         // create serial number mapping
-        let nodes: Vec<_> = mol.graph.node_indices().collect();
-        for (sn, n) in (1..).zip(nodes.into_iter()) {
+        let nodes = mol.graph.node_indices();
+        for (sn, n) in (1..).zip(nodes) {
             mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
         }
 
         mol
     }
 }
-// constructor:1 ends here
+// 29c55361 ends here
 
 // [[file:../gchemol-core.note::*basic][basic:1]]
 /// Core methods
