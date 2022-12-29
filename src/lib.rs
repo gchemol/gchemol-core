@@ -27,7 +27,6 @@ mod formula;
 mod lattice;
 mod molecule;
 mod property;
-mod ring;
 
 #[cfg(feature = "adhoc")]
 mod clean;
@@ -41,6 +40,8 @@ mod geometry;
 mod inertia;
 #[cfg(feature = "adhoc")]
 mod order;
+#[cfg(feature = "adhoc")]
+mod ring;
 #[cfg(feature = "adhoc")]
 mod topology;
 
