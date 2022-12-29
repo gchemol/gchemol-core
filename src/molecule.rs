@@ -436,7 +436,7 @@ impl Molecule {
 }
 // 61192a00 ends here
 
-// [[file:../gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::b07deb3d][b07deb3d]]
 #[test]
 fn test() {
     let mut mol = Molecule::new("test");
@@ -453,11 +453,11 @@ fn test() {
     assert_eq!(mol.nbonds(), 2);
 
     for (i, a) in mol.atoms() {
-        dbg!((i, a.symbol()));
+        // dbg!((i, a.symbol()));
     }
 
     // set title
     mol.set_title("new mol");
     mol.set_title(format!("Molecule: {}", 4));
 }
-// test:1 ends here
+// b07deb3d ends here

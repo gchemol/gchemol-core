@@ -254,16 +254,19 @@ impl Atom {
 }
 
 // molecule
+// #+name: 190e0574
 
 impl Molecule {
     /// Returns `Molecule` created from the internal database (mainly for tests).
+    ///
+    /// Available names: `CH4`, `H2O`, `HCN`
     pub fn from_database(name: &str) -> Self {
         let ch4 = "
-  C  -0.0000   -0.0000    0.0000
-  H   1.0900   -0.0000    0.0000
-  H  -0.3633    1.0277    0.0000
-  H  -0.3633   -0.5138    0.8900
-  H  -0.3633   -0.5138   -0.8900 ";
+C  -0.0000   -0.0000    0.0000
+H   1.0900   -0.0000    0.0000
+H  -0.3633    1.0277    0.0000
+H  -0.3633   -0.5138    0.8900
+H  -0.3633   -0.5138   -0.8900 ";
 
         let h2o = "
 O    -1.4689     2.1375     0.0000
