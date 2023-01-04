@@ -47,6 +47,9 @@ mod topology;
 
 #[cfg(feature = "adhoc")]
 pub use crate::freeze::Mask;
+
+#[cfg(feature = "adhoc")]
+mod selection;
 // 92c9c7da ends here
 
 // [[file:../gchemol-core.note::*common][common:1]]
