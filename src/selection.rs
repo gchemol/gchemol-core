@@ -40,7 +40,17 @@ impl Molecule {
     /// Return selected atoms by cutoff distance `r` nearby central atom `n`
     pub fn selection_by_distance(&self, n: usize, r: f64) -> Vec<usize> {
         assert!(r.is_sign_positive(), "invalid cutoff distance {r:?}");
-        todo!();
+
+        let mut nh = neighbors::Neighborhood::new();
+        let points = self.atoms().map(|(i, atom)| (i, atom.position()));
+        nh.update(points);
+        // for molecule with periodic structure
+        if let Some(lat) = self.get_lattice() {
+            nh.set_lattice(lat.matrix().into());
+        }
+
+        // FIXME: periodic images?
+        nh.neighbors(n, r).map(|n| n.node).collect()
     }
 }
 // 90d8094c ends here
