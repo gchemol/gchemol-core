@@ -60,7 +60,7 @@ pub(crate) mod common {
 }
 // common:1 ends here
 
-// [[file:../gchemol-core.note::*exports][exports:1]]
+// [[file:../gchemol-core.note::3a22317c][3a22317c]]
 pub use crate::atom::*;
 pub use crate::bond::*;
 pub use crate::element::*;
@@ -69,5 +69,6 @@ pub use crate::molecule::*;
 
 pub use crate::property::PropertyStore;
 
+pub use crate::selection::NeighborProbe;
 pub use neighbors;
-// exports:1 ends here
+// 3a22317c ends here
