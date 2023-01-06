@@ -69,6 +69,9 @@ pub use crate::molecule::*;
 
 pub use crate::property::PropertyStore;
 
-pub use crate::selection::NeighborProbe;
-pub use neighbors;
+/// For neighboring atoms search
+pub mod neighbors {
+    pub use crate::selection::NeighborProbe;
+    pub use ::neighbors::*;
+}
 // 3a22317c ends here
