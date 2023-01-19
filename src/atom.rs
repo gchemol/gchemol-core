@@ -104,6 +104,7 @@ impl Atom {
     }
 
     /// Return the user defined atom label, if not return the elment symbol.
+    #[deprecated(note = "use get_label instead")]
     pub fn label(&self) -> &str {
         if let Some(ref l) = self.label {
             return l;
@@ -111,6 +112,11 @@ impl Atom {
 
         // default atom label: element symbol
         self.symbol()
+    }
+
+    /// Return the user defined atom label if defined.
+    pub fn get_label(&self) -> Option<&str> {
+        self.label.as_deref()
     }
 
     /// Set atom symbol.
