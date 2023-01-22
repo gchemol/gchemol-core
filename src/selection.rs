@@ -25,36 +25,6 @@ fn select_atoms_by_expanding_bond_(mol: &Molecule, m: usize, n: usize) -> HashSe
 // d5924a86 ends here
 
 // [[file:../gchemol-core.note::a95d3144][a95d3144]]
-#[derive(Debug, Clone)]
-/// Represent a probe for searching nearby neighbors within distance
-/// cutoff.
-pub struct NeighborProbe {
-    parent_mol: Molecule,
-    nh: Neighborhood,
-}
-
-impl NeighborProbe {
-    fn new(mol: &Molecule) -> Self {
-        let nh = create_neighborhood_probe(mol);
-        let parent_mol = mol.clone();
-        Self { parent_mol, nh }
-    }
-
-    /// Return neighbors of a particle `p` within distance cutoff `r_cutoff`.
-    ///
-    /// # Parameters
-    /// * p: the Cartesian position or probe
-    /// * r_cutoff: the cutoff distance for searching neighbors
-    pub fn probe_neighbors(&self, p: [f64; 3], r_cutoff: f64) -> impl Iterator<Item = Neighbor> + '_ {
-        self.nh.search(p, r_cutoff)
-    }
-
-    /// Return an iterator of the nodes connected to the node `n`.
-    pub fn neighbors(&self, n: usize, r_cutoff: f64) -> impl Iterator<Item = Neighbor> + '_ {
-        self.nh.neighbors(n, r_cutoff)
-    }
-}
-
 /// Return a `Neighborhood` struct for probing nearest neighbors in `mol`
 ///
 /// N.B. The neighbor node index is defined using atom serial number
@@ -96,7 +66,9 @@ impl Molecule {
         nh.neighbors(n, r).map(|n| n.node).collect()
     }
 
-    /// Return a `NeighborProbe` struct for finding nearest neighbors.
+    /// Return a `Neighborhood` struct for probing nearest neighbors in `mol`
+    ///
+    /// N.B. The neighbor node index is defined using atom serial number
     ///
     /// # Example
     ///
@@ -104,11 +76,11 @@ impl Molecule {
     /// let probe = mol.create_neighbor_probe();
     /// let p = [1.0, 2.0, 3.0];
     /// let r_cut = 3.2;
-    /// let neighbors = probe.probe_neighbors(p, r_cut);
+    /// let neighbors = probe.search(p, r_cut);
     /// let neighbors = probe.neighbors(12, r_cut);
     /// ```
-    pub fn create_neighbor_probe(&self) -> NeighborProbe {
-        NeighborProbe::new(&self)
+    pub fn create_neighbor_probe(&self) -> Neighborhood {
+        create_neighborhood_probe(&self)
     }
 }
 // 90d8094c ends here
