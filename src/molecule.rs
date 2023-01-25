@@ -101,11 +101,17 @@ impl Molecule {
 
     /// Build `Molecule` from raw graph struct.
     pub fn from_graph(graph: MolGraph) -> Self {
+        Self::from_graph_raw(graph, 1..)
+    }
+
+    /// Build `Molecule` from raw graph struct, with optional atom serial numbers.
+    #[cfg(feature = "adhoc")]
+    pub fn from_graph_raw(graph: MolGraph, atoms: impl IntoIterator<Item = usize>) -> Self {
         let mut mol = Self { graph, ..Default::default() };
 
         // create serial number mapping
         let nodes = mol.graph.node_indices();
-        for (sn, n) in (1..).zip(nodes) {
+        for (sn, n) in atoms.into_iter().zip(nodes) {
             mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
         }
 

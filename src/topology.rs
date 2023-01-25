@@ -9,15 +9,7 @@ fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Mole
     let nodes = nodes?;
     let graph = mol.graph().subgraph(&nodes);
 
-    let mut mol = Molecule { graph, ..Default::default() };
-
-    // create serial number mapping
-    let nodes = mol.graph.node_indices();
-    for (&sn, n) in atoms.iter().zip(nodes) {
-        mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
-    }
-
-    mol.into()
+    Molecule::from_graph_raw(graph, atoms.iter().copied()).into()
 }
 // 51a9048d ends here
 
@@ -134,6 +126,9 @@ fn test_topo_path() {
     assert!(submol.has_bond(1, 2));
     assert!(submol.has_bond(1, 4));
     assert!(!submol.has_bond(2, 4));
+    assert_eq!(mol.get_distance(2, 4), submol.get_distance(2, 4));
+    assert_eq!(mol.get_distance(1, 4), submol.get_distance(1, 4));
+    assert_eq!(mol.get_distance(1, 2), submol.get_distance(1, 2));
 
     let a4_parent = mol.get_atom_unchecked(4);
     let a4_child = submol.get_atom_unchecked(4);
