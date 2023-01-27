@@ -16,16 +16,27 @@ impl Molecule {
 }
 // core:1 ends here
 
-// [[file:../gchemol-core.note::*api][api:1]]
+// [[file:../gchemol-core.note::31e7954d][31e7954d]]
 /// Display order of `Atom` in `Molecule`
 impl Molecule {
     /// Renumber atoms consecutively from 1.
     pub fn renumber(&mut self) {
+        let n = self.natoms();
+        let atoms = (1..n + 1).collect_vec();
+        self.renumber_using(&atoms);
+    }
+
+    /// Renumber atoms by user provided numbers for each atom.
+    ///
+    /// # NOTE
+    /// - number in `atoms` must be unique and in one-to-one mapping to
+    ///   original numbering.
+    pub fn renumber_using(&mut self, atoms: &[usize]) {
         let nodes: Vec<_> = self.node_indices().collect();
-        debug_assert_eq!(nodes.len(), self.natoms());
+        assert_eq!(nodes.len(), atoms.len());
         self.mapping.clear();
 
-        for (i, n) in (1..).zip(nodes) {
+        for (&i, n) in atoms.iter().zip(nodes) {
             self.mapping.insert_no_overwrite(i, n).expect("renumber failure");
         }
     }
@@ -71,7 +82,7 @@ impl Molecule {
         }
     }
 }
-// api:1 ends here
+// 31e7954d ends here
 
 // [[file:../gchemol-core.note::*test][test:1]]
 #[test]

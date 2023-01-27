@@ -9,7 +9,7 @@ fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Mole
     let nodes = nodes?;
     let graph = mol.graph().subgraph(&nodes);
 
-    Molecule::from_graph_raw(graph, atoms.iter().copied()).into()
+    Molecule::from_graph_raw(graph, atoms.into_iter().copied()).into()
 }
 // 51a9048d ends here
 
