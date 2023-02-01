@@ -1,12 +1,8 @@
-// imports
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::*imports][imports:1]]
 use serde::*;
 // imports:1 ends here
 
-// data
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*data][data:1]]
+// [[file:../gchemol-core.note::cab264f1][cab264f1]]
 const ELEMENT_DATA: [(&str, &str); 118] = [
     ("H", "Hydrogen"),
     ("He", "Helium"),
@@ -127,11 +123,9 @@ const ELEMENT_DATA: [(&str, &str); 118] = [
     ("Uus", "Ununseptium"),
     ("Uuo", "Ununoctium"),
 ];
-// data:1 ends here
+// cab264f1 ends here
 
-// base
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*base][base:1]]
+// [[file:../gchemol-core.note::*base][base:1]]
 /// Represents different kind of atom, such as cheimcial element, dummy atom,
 /// etc.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
@@ -172,9 +166,14 @@ impl AtomKind {
 }
 // base:1 ends here
 
-// conversion
+// [[file:../gchemol-core.note::3ffd6c5d][3ffd6c5d]]
+gut::config::lazy_static! {
+    /// Global cache for quick get element number from symbol
+    pub static ref ELEMENTS: std::collections::HashMap<&'static str, usize> = {
+        ELEMENT_DATA.iter().zip(1..).map(|((s, _), i)| (*s, i)).collect()
+    };
+}
 
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*conversion][conversion:1]]
 impl std::fmt::Display for AtomKind {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(f, "{:}", self.symbol())
@@ -192,6 +191,11 @@ impl std::convert::From<usize> for AtomKind {
 
 impl std::convert::From<&str> for AtomKind {
     fn from(label: &str) -> Self {
+        // from element symbol
+        if let Some(&n) = ELEMENTS.get(label) {
+            return Element(n);
+        }
+
         // element specified in number
         if let Ok(x) = label.parse::<usize>() {
             return Element(x);
@@ -221,11 +225,9 @@ impl std::convert::From<&String> for AtomKind {
         Self::from(label.as_str())
     }
 }
-// conversion:1 ends here
+// 3ffd6c5d ends here
 
-// test
-
-// [[file:~/Workspace/Programming/gchemol-rs/gchemol-core/gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::*test][test:1]]
 #[test]
 fn test_element() {
     let h1: AtomKind = 1.into();
