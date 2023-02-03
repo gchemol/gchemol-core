@@ -193,7 +193,7 @@ impl FromStr for Atom {
         if nparts >= 6 {
             let vxyz: Vec<_> = parts[4..7].iter().filter_map(|x| x.parse().ok()).collect();
             if vxyz.len() == 3 {
-                atom.set_velocity([vxyz[0], vxyz[1], vxyz[2]]);
+                atom.velocity = [vxyz[0], vxyz[1], vxyz[2]].into();
             }
         }
 

@@ -105,7 +105,6 @@ impl Molecule {
     }
 
     /// Build `Molecule` from raw graph struct, with atom serial numbers.
-    #[cfg(feature = "adhoc")]
     pub fn from_graph_raw(graph: MolGraph, atoms: impl IntoIterator<Item = usize>) -> Self {
         let n = graph.number_of_nodes();
         let mut mol = Self { graph, ..Default::default() };
