@@ -104,6 +104,7 @@ impl Atom {
     }
 
     /// Return the user defined atom label, if not return the elment symbol.
+    #[deprecated(note = "use get_label instead")]
     pub fn label(&self) -> &str {
         if let Some(ref l) = self.label {
             return l;
@@ -111,6 +112,11 @@ impl Atom {
 
         // default atom label: element symbol
         self.symbol()
+    }
+
+    /// Return the user defined atom label if defined.
+    pub fn get_label(&self) -> Option<&str> {
+        self.label.as_deref()
     }
 
     /// Set atom symbol.
@@ -166,7 +172,7 @@ impl Atom {
 }
 // d14b8035 ends here
 
-// [[file:../gchemol-core.note::*convert][convert:1]]
+// [[file:../gchemol-core.note::fa2e494e][fa2e494e]]
 use std::convert::From;
 use std::str::FromStr;
 
@@ -175,16 +181,21 @@ impl FromStr for Atom {
 
     fn from_str(line: &str) -> Result<Self> {
         let parts: Vec<_> = line.split_whitespace().collect();
-        if parts.len() != 4 {
-            bail!("Incorrect number of data fields: {:?}", line);
-        }
-
+        let nparts = parts.len();
+        ensure!(nparts >= 4, "Incorrect number of data fields: {line:?}");
         let sym = parts[0];
         let px: f64 = parts[1].parse()?;
         let py: f64 = parts[2].parse()?;
         let pz: f64 = parts[3].parse()?;
 
-        let atom = Atom::new(sym, [px, py, pz]);
+        let mut atom = Atom::new(sym, [px, py, pz]);
+        // HACK: parse velocities
+        if nparts >= 6 {
+            let vxyz: Vec<_> = parts[4..7].iter().filter_map(|x| x.parse().ok()).collect();
+            if vxyz.len() == 3 {
+                atom.velocity = [vxyz[0], vxyz[1], vxyz[2]].into();
+            }
+        }
 
         Ok(atom)
     }
@@ -212,9 +223,9 @@ where
         Self::new(item.0, item.1)
     }
 }
-// convert:1 ends here
+// fa2e494e ends here
 
-// [[file:../gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::a09f666f][a09f666f]]
 #[test]
 fn test_atom_basic() {
     let _ = Atom::default();
@@ -245,5 +256,12 @@ fn test_atom_convert() {
     // from and into
     let a: Atom = (1, [0.0; 3]).into();
     assert_eq!(a.number(), 1);
+
+    // velocity
+    let line = "H 1.0 1.0 1.0 2.0 0.0 0";
+    let a: Atom = line.parse().unwrap();
+    assert_eq!(a.velocity.x, 2.0);
+    assert_eq!(a.velocity.y, 0.0);
+    assert_eq!(a.velocity.z, 0.0);
 }
-// test:1 ends here
+// a09f666f ends here

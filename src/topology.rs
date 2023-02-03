@@ -1,6 +1,7 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::ff231cb5][ff231cb5]]
+use crate::common::*;
 use crate::Molecule;
-// imports:1 ends here
+// ff231cb5 ends here
 
 // [[file:../gchemol-core.note::51a9048d][51a9048d]]
 fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Molecule> {
@@ -8,15 +9,7 @@ fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Mole
     let nodes = nodes?;
     let graph = mol.graph().subgraph(&nodes);
 
-    let mut mol = Molecule { graph, ..Default::default() };
-
-    // create serial number mapping
-    let nodes = mol.graph.node_indices();
-    for (&sn, n) in atoms.iter().zip(nodes) {
-        mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
-    }
-
-    mol.into()
+    Molecule::from_graph_raw(graph, atoms.into_iter().copied()).into()
 }
 // 51a9048d ends here
 
@@ -76,6 +69,33 @@ impl Molecule {
     pub fn get_sub_molecule(&self, atoms: &[usize]) -> Option<Molecule> {
         create_submolecule_from_atoms(&self, atoms)
     }
+
+    /// Return a shallow connectivity graph without copying atom/bond data
+    pub fn bond_graph(&self) -> NxGraph<usize, usize> {
+        let mut result_g = NxGraph::new();
+
+        // add nodes from atom serial numbers
+        let node_map: std::collections::HashMap<_, _> = self.numbers().map(|n| (n, result_g.add_node(n))).collect();
+
+        // add edges from chemical bonds
+        for (i, j, _) in self.bonds() {
+            let src = node_map[&i];
+            let tar = node_map[&j];
+            result_g.add_edge(src, tar, 1);
+        }
+
+        result_g
+    }
+
+    /// Break molecule into multiple fragments based on its bonding connectivity.
+    pub fn fragmented(&self) -> impl Iterator<Item = Self> + '_ {
+        self.graph().connected_components().map(|g| Molecule::from_graph(g))
+    }
+
+    /// Return the number of fragments based on bonding connectivity.
+    pub fn nfragments(&self) -> usize {
+        self.graph().connected_components().count()
+    }
 }
 // 687744ec ends here
 
@@ -106,9 +126,27 @@ fn test_topo_path() {
     assert!(submol.has_bond(1, 2));
     assert!(submol.has_bond(1, 4));
     assert!(!submol.has_bond(2, 4));
+    assert_eq!(mol.get_distance(2, 4), submol.get_distance(2, 4));
+    assert_eq!(mol.get_distance(1, 4), submol.get_distance(1, 4));
+    assert_eq!(mol.get_distance(1, 2), submol.get_distance(1, 2));
 
     let a4_parent = mol.get_atom_unchecked(4);
     let a4_child = submol.get_atom_unchecked(4);
     assert_eq!(a4_parent.position(), a4_child.position());
+
+    // test fragments
+    let mol1 = Molecule::from_database("CH4");
+    let mut mol2 = mol1.clone();
+    let n = mol.natoms();
+    // move mol1 away
+    mol.translate([10.0, 0.0, 0.0]);
+    for (i, a) in mol.atoms() {
+        mol2.add_atom(i + n, a.clone());
+    }
+    mol2.rebond();
+    let frags = mol2.fragmented().collect_vec();
+    assert_eq!(frags.len(), 2);
+    assert_eq!(frags[0].formula(), "CH4");
+    assert_eq!(frags[1].formula(), "CH4");
 }
 // cf82e7a7 ends here

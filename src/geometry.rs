@@ -1,7 +1,8 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::8df18d4c][8df18d4c]]
+use crate::common::*;
 use crate::{Atom, Molecule};
 use crate::{Point3, Vector3f};
-// imports:1 ends here
+// 8df18d4c ends here
 
 // [[file:../gchemol-core.note::*api/core][api/core:1]]
 /// Geometry related methods
@@ -111,3 +112,48 @@ impl Molecule {
     }
 }
 // 95de44db ends here
+
+// [[file:../gchemol-core.note::b3195ba1][b3195ba1]]
+impl Molecule {
+    /// Superimpose structure onto `mol_ref` which will be held fixed
+    /// during alignment. Return superposition rmsd on done.
+    ///
+    /// # NOTE
+    /// * The atoms must be in one-to-one mapping with atoms in `mol_ref`
+    /// * The structure could be mirrored for better alignment.
+    /// * Heavy atoms have more weights.
+    pub fn superimpose_onto(&mut self, mol_ref: &Molecule, selection: Option<&[usize]>) -> f64 {
+        use gchemol_geometry::Superimpose;
+
+        let (positions_this, positions_prev, weights) = if let Some(selected) = selection {
+            let this = selected.iter().map(|&i| self.get_atom(i).unwrap().position()).collect_vec();
+            let prev = selected.iter().map(|&i| mol_ref.get_atom(i).unwrap().position()).collect_vec();
+            let weights = selected.iter().map(|&i| self.get_atom(i).unwrap().get_mass().unwrap()).collect_vec();
+            (this, prev, weights)
+        } else {
+            (
+                self.positions().collect_vec(),
+                mol_ref.positions().collect_vec(),
+                self.masses().collect_vec(),
+            )
+        };
+        assert_eq!(positions_this.len(), positions_prev.len());
+        assert_eq!(positions_this.len(), weights.len());
+        let sp1 = Superimpose::new(&positions_this).onto(&positions_prev, weights.as_slice().into());
+        let mut positions_this_mirrored = positions_this.clone();
+        positions_this_mirrored.mirror_invert();
+        let sp2 = Superimpose::new(&positions_this_mirrored).onto(&positions_prev, weights.as_slice().into());
+        let positions_this_all = self.positions().collect_vec();
+        let (positions_new, rmsd) = if sp1.rmsd < sp2.rmsd {
+            (sp1.apply(&positions_this_all), sp1.rmsd)
+        } else {
+            let mut positions_this_all_mirrored = positions_this_all.clone();
+            positions_this_all_mirrored.mirror_invert();
+            (sp2.apply(&positions_this_all_mirrored), sp2.rmsd)
+        };
+
+        self.set_positions(positions_new);
+        rmsd
+    }
+}
+// b3195ba1 ends here

@@ -25,9 +25,10 @@ impl Molecule {
         self.lattice.is_some()
     }
 
-    /// Unbuild current crystal structure leaving a nonperiodic structure
-    pub fn unbuild_crystal(&mut self) {
-        self.lattice = None
+    /// Unbuild current crystal structure leaving a nonperiodic
+    /// structure. Return `Lattice` object if periodic, otherwise return None.
+    pub fn unbuild_crystal(&mut self) -> Option<Lattice> {
+        self.lattice.take()
     }
 
     #[deprecated(note = "use get_scaled_positions instead")]

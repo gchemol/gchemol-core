@@ -101,11 +101,17 @@ impl Molecule {
 
     /// Build `Molecule` from raw graph struct.
     pub fn from_graph(graph: MolGraph) -> Self {
+        Self::from_graph_raw(graph, 1..)
+    }
+
+    /// Build `Molecule` from raw graph struct, with atom serial numbers.
+    pub fn from_graph_raw(graph: MolGraph, atoms: impl IntoIterator<Item = usize>) -> Self {
+        let n = graph.number_of_nodes();
         let mut mol = Self { graph, ..Default::default() };
 
         // create serial number mapping
         let nodes = mol.graph.node_indices();
-        for (sn, n) in (1..).zip(nodes) {
+        for (sn, n) in atoms.into_iter().zip(nodes) {
             mol.mapping.insert_no_overwrite(sn, n).expect("from graph failure");
         }
 
@@ -436,7 +442,7 @@ impl Molecule {
 }
 // 61192a00 ends here
 
-// [[file:../gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::b07deb3d][b07deb3d]]
 #[test]
 fn test() {
     let mut mol = Molecule::new("test");
@@ -453,11 +459,11 @@ fn test() {
     assert_eq!(mol.nbonds(), 2);
 
     for (i, a) in mol.atoms() {
-        dbg!((i, a.symbol()));
+        // dbg!((i, a.symbol()));
     }
 
     // set title
     mol.set_title("new mol");
     mol.set_title(format!("Molecule: {}", 4));
 }
-// test:1 ends here
+// b07deb3d ends here

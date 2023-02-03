@@ -27,7 +27,6 @@ mod formula;
 mod lattice;
 mod molecule;
 mod property;
-mod ring;
 
 #[cfg(feature = "adhoc")]
 mod clean;
@@ -42,10 +41,15 @@ mod inertia;
 #[cfg(feature = "adhoc")]
 mod order;
 #[cfg(feature = "adhoc")]
+mod ring;
+#[cfg(feature = "adhoc")]
 mod topology;
 
 #[cfg(feature = "adhoc")]
 pub use crate::freeze::Mask;
+
+#[cfg(feature = "adhoc")]
+mod selection;
 // 92c9c7da ends here
 
 // [[file:../gchemol-core.note::*common][common:1]]
@@ -56,7 +60,7 @@ pub(crate) mod common {
 }
 // common:1 ends here
 
-// [[file:../gchemol-core.note::*exports][exports:1]]
+// [[file:../gchemol-core.note::3a22317c][3a22317c]]
 pub use crate::atom::*;
 pub use crate::bond::*;
 pub use crate::element::*;
@@ -65,5 +69,9 @@ pub use crate::molecule::*;
 
 pub use crate::property::PropertyStore;
 
-pub use neighbors;
-// exports:1 ends here
+#[cfg(feature = "adhoc")]
+/// For neighboring atoms search
+pub mod neighbors {
+    pub use ::neighbors::*;
+}
+// 3a22317c ends here
