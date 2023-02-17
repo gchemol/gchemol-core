@@ -63,7 +63,7 @@ impl Molecule {
 
         // FIXME: periodic images?
         let nh = create_neighborhood_probe(self);
-        nh.neighbors(n, r).map(|n| n.node).collect()
+        nh.neighbors(n, r).map(|n| n.node).chain(Some(n)).collect()
     }
 
     /// Return a `Neighborhood` struct for probing nearest neighbors in `mol`
