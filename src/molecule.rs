@@ -278,6 +278,7 @@ impl Molecule {
     }
 
     /// Read access to atom by atom serial number. Panic if no this atom.
+    #[track_caller]
     pub fn get_atom_unchecked(&self, sn: usize) -> &Atom {
         assert!(self.has_atom(sn), "invalid atom `sn` {sn}, mol: {:?}", &self);
         self.get_atom(sn).unwrap()
@@ -299,6 +300,7 @@ impl Molecule {
     }
 
     /// Mutable access to atom by atom serial number. Panic if no this atom.
+    #[track_caller]
     pub fn get_atom_unchecked_mut(&mut self, sn: usize) -> &mut Atom {
         assert!(self.has_atom(sn), "invalid atom i: {}, mol: {:?}", sn, &self);
         self.get_atom_mut(sn).unwrap()
