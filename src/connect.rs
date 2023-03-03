@@ -5,48 +5,30 @@ use serde::*;
 use crate::{Atom, Bond, BondKind, Molecule};
 // imports:1 ends here
 
-// [[file:../gchemol-core.note::270a1c57][270a1c57]]
-#[derive(Deserialize, Debug)]
-#[serde(default)]
-pub struct BondingConfig {
-    /// Bonding ratio for guessing chemical bonds
-    bonding_ratio: f64,
+// [[file:../gchemol-core.note::6f47fef0][6f47fef0]]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RebondOptions {
+    // the distance tolerance for determine bonded or not between two
+    // atoms.
+    bond_tolerance: f64,
+    // ignore periodic lattice when create bonds
+    ignore_pbc: bool,
 }
 
-impl Default for BondingConfig {
+impl Default for RebondOptions {
     fn default() -> Self {
-        // same value as mdanalysis
         Self {
-            bonding_ratio: 0.55,
+            // JMOL: DEFAULT_BOND_TOLERANCE
+            bond_tolerance: 0.45,
+            ignore_pbc: false,
         }
     }
 }
+// 6f47fef0 ends here
 
-fn guess_bond(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
-    let config: BondingConfig = envy::prefixed("GCHEMOL_").from_env().unwrap_or_else(|e| {
-        error!("parsing bonding env error: {:?}", e);
-        BondingConfig::default()
-    });
-
-    match (atom1.get_vdw_radius(), atom2.get_vdw_radius()) {
-        (Some(r1), Some(r2)) => {
-            let r = config.bonding_ratio;
-            let rcut = (r1 + r2) * r;
-            if distance > rcut {
-                Bond::dummy()
-            } else {
-                // FIXME: guess bond type
-                Bond::single()
-            }
-        }
-        _ => Bond::dummy(),
-    }
-}
-
+// [[file:../gchemol-core.note::270a1c57][270a1c57]]
 // guess bonds in Jmol style
-fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
-    // JMOL: DEFAULT_BOND_TOLERANCE
-    let bond_tolerance = 0.45;
+fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: f64) -> Bond {
     match (atom1.get_bonding_radius(), atom2.get_bonding_radius()) {
         (Some(r1), Some(r2)) => {
             let rcut = r1 + r2 + bond_tolerance;
@@ -62,13 +44,25 @@ fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64) -> Bond {
 
 /// Guess if bonds exist between two atoms based on their distance.
 pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
-    // FIXME: lattice?
+    let options: RebondOptions = envy::prefixed("GCHEMOL_REBOND_").from_env().unwrap_or_else(|e| {
+        error!("parsing bonding env error: {:?}", e);
+        RebondOptions::default()
+    });
+    let bond_tolerance = options.bond_tolerance;
+    if bond_tolerance != RebondOptions::default().bond_tolerance {
+        info!("rebond: bond tolerance = {bond_tolerance}");
+    }
+
     let mut nh = neighbors::Neighborhood::new();
     let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
     nh.update(points);
     // for molecule with periodic structure
     if let Some(lat) = mol.get_lattice() {
-        nh.set_lattice(lat.matrix().into());
+        if !options.ignore_pbc {
+            nh.set_lattice(lat.matrix().into());
+        } else {
+            info!("ignored pbc when guess bonds");
+        }
     }
 
     let mut bonds = vec![];
@@ -94,7 +88,7 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
         }
         for (j, dij) in connected {
             let atom_j = mol.get_atom(j).unwrap();
-            let bond = guess_bond_jmol(atom_i, atom_j, dij);
+            let bond = guess_bond_jmol(atom_i, atom_j, dij, bond_tolerance);
             if !bond.is_dummy() {
                 bonds.push((i, j, bond));
             }
@@ -124,7 +118,6 @@ impl Molecule {
     /// Reference
     /// ---------
     /// https://pymolwiki.org/index.php/Unbond
-    ///
     pub fn unbond(&mut self, atom_indices1: &[usize], atom_indices2: &[usize]) {
         for &index1 in atom_indices1.iter() {
             for &index2 in atom_indices2.iter() {
