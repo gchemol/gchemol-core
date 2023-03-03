@@ -87,7 +87,9 @@ impl Molecule {
         result_g
     }
 
-    /// Break molecule into multiple fragments based on its bonding connectivity.
+    /// Break molecule into multiple fragments based on its bonding
+    /// connectivity. Return molecules whole connected by bonds
+    /// without periodic lattice
     pub fn fragmented(&self) -> impl Iterator<Item = Self> + '_ {
         self.graph().connected_components().map(|g| Molecule::from_graph(g))
     }
