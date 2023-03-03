@@ -8,11 +8,14 @@ use crate::{Atom, Bond, BondKind, Molecule};
 // [[file:../gchemol-core.note::6f47fef0][6f47fef0]]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RebondOptions {
-    // the distance tolerance for determine bonded or not between two
+    // The distance tolerance for determine bonded or not between two
     // atoms.
     bond_tolerance: f64,
-    // ignore periodic lattice when create bonds
+    // Ignore periodic lattice when create bonds
     ignore_pbc: bool,
+    // The distance cutoff for searching nearest neighbors. Beyond
+    // this value, the bonding is not considered.
+    distance_cutoff: f64,
 }
 
 impl Default for RebondOptions {
@@ -21,6 +24,8 @@ impl Default for RebondOptions {
             // JMOL: DEFAULT_BOND_TOLERANCE
             bond_tolerance: 0.45,
             ignore_pbc: false,
+            // NOTE: 1.6 is the largest cov radius of all elements (jmol)
+            distance_cutoff: 1.6 * 2.0 + 0.4,
         }
     }
 }
@@ -52,6 +57,10 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     if bond_tolerance != RebondOptions::default().bond_tolerance {
         info!("rebond: bond tolerance = {bond_tolerance}");
     }
+    let distance_cutoff = options.distance_cutoff;
+    if distance_cutoff != RebondOptions::default().distance_cutoff {
+        info!("rebond: distance cutoff = {distance_cutoff}");
+    }
 
     let mut nh = neighbors::Neighborhood::new();
     let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
@@ -66,11 +75,9 @@ pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
     }
 
     let mut bonds = vec![];
-    // NOTE: 1.6 is the largest cov radius of all elements (jmol)
-    let d_bonding_cutoff = 1.6 * 2.0 + 0.4;
     for (i, atom_i) in mol.atoms() {
         // unique neighbors of `i` no double counting
-        let local_neighbors_uniq = nh.neighbors(i, d_bonding_cutoff).filter(|n| n.node > i);
+        let local_neighbors_uniq = nh.neighbors(i, distance_cutoff).filter(|n| n.node > i);
         let mut connected = std::collections::HashMap::new();
         for n in local_neighbors_uniq {
             let j = n.node;
