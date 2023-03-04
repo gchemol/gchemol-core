@@ -98,6 +98,13 @@ impl Molecule {
     pub fn nfragments(&self) -> usize {
         self.graph().connected_components().count()
     }
+
+    /// Return all atoms that connected in the same fragment as atom
+    /// `i`.
+    pub fn connected_fragment(&self, i: usize) -> impl Iterator<Item = usize> + '_ {
+        let node = self.node_index(i);
+        self.graph().node_connected_component(node).map(|n| 1)
+    }
 }
 // 687744ec ends here
 
