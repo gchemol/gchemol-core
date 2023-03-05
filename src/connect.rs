@@ -6,6 +6,7 @@ use crate::{Atom, Bond, BondKind, Molecule};
 // imports:1 ends here
 
 // [[file:../gchemol-core.note::6f47fef0][6f47fef0]]
+#[serde(default)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RebondOptions {
     // The distance tolerance for determine bonded or not between two
