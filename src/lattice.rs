@@ -81,7 +81,6 @@ impl Molecule {
     ///
     /// * sa, sb, sc: An sequence of three scaling factors. E.g., [2, 1, 1]
     /// specifies that the supercell should have dimensions 2a x b x c
-    ///
     pub fn supercell(&self, sa: usize, sb: usize, sc: usize) -> Option<Molecule> {
         // add atoms by looping over three lattice directions
         let lat = self.lattice?;
