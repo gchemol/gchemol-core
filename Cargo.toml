@@ -1,7 +1,7 @@
 # [[file:gchemol-core.note::8ea3ce8a][8ea3ce8a]]
 [package]
 name = "gchemol-core"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 description = "Core chemical objects for gchemol"
@@ -20,7 +20,7 @@ gut = { version = "0.4", package = "gchemol-gut" }
 neighbors = { version = "0.1", package = "gchemol-neighbors" }
 gchemol-geometry = { version = "0.1.1" }
 gchemol-graph = "0.1.5"
-gchemol-lattice = "0.1"
+gchemol-lattice = "0.1.1"
 
 [dev-dependencies]
 # for tests only
