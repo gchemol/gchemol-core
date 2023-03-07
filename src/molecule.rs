@@ -120,7 +120,7 @@ impl Molecule {
 }
 // 29c55361 ends here
 
-// [[file:../gchemol-core.note::*basic][basic:1]]
+// [[file:../gchemol-core.note::8017401a][8017401a]]
 /// Core methods
 impl Molecule {
     /// Add atom `a` into molecule. If Atom numbered as `a` already exists in
@@ -267,7 +267,7 @@ impl Molecule {
         &mut self.graph
     }
 }
-// basic:1 ends here
+// 8017401a ends here
 
 // [[file:../gchemol-core.note::61192a00][61192a00]]
 /// Edit `Molecule`

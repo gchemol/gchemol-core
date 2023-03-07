@@ -15,6 +15,12 @@ impl Molecule {
         self.lattice.as_ref()
     }
 
+    #[cfg(feature = "adhoc")]
+    /// Get a mutable reference to `Lattice` struct.
+    pub fn get_lattice_mut(&mut self) -> Option<&mut Lattice> {
+        self.lattice.as_mut()
+    }
+
     /// Set periodic lattice
     pub fn set_lattice(&mut self, lat: Lattice) {
         self.lattice = Some(lat);
