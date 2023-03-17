@@ -210,17 +210,9 @@ impl Molecule {
         self.mapping.left_values().copied().sorted()
     }
 
-    #[cfg(feature = "adhoc")]
     /// A shorter alias to [serial_numbers](#method.serial_numbers) method.
     pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
         self.serial_numbers()
-    }
-
-    #[cfg(not(feature = "adhoc"))]
-    #[deprecated(since = "0.0.40", note = "please use atomic_numbers instead")]
-    /// Return an iterator over atomic numbers of atoms.
-    pub fn numbers(&self) -> impl Iterator<Item = usize> + '_ {
-        self.atomic_numbers()
     }
 
     /// Iterate over atom symbols ordered by serial numbers.
@@ -244,8 +236,10 @@ impl Molecule {
         self.atoms().map(move |(_, atom)| atom.position())
     }
 
-    /// Return the name of the molecule, which is typpically modified for safely
-    /// storing in various chemical file formats.
+    /// A short description of the molecule.
+    ///
+    /// NOTE: for long title, only the first line will be return for safely
+    /// storing in various chemical file formats such as xyz.
     pub fn title(&self) -> String {
         let tlines: Vec<_> = self.name.lines().collect();
         if tlines.is_empty() {

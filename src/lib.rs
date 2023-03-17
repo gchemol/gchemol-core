@@ -1,4 +1,4 @@
-// [[file:../gchemol-core.note::*header][header:1]]
+// [[file:../gchemol-core.note::cb1b201a][cb1b201a]]
 //===============================================================================#
 //   DESCRIPTION:  molecule object repsented in graph data structure
 //
@@ -8,11 +8,10 @@
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
 //       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
-//       UPDATED:  <>
 //===============================================================================#
 
 #![deny(missing_docs)] // rustdoc will fail if there is missing docs
-// header:1 ends here
+// cb1b201a ends here
 
 // [[file:../gchemol-core.note::*header][header:3]]
 //!# Core chemical objects for gchemol
@@ -50,6 +49,9 @@ pub use crate::freeze::Mask;
 
 #[cfg(feature = "adhoc")]
 mod selection;
+
+// #[cfg(feature = "adhoc")]
+// pub mod images;
 // 92c9c7da ends here
 
 // [[file:../gchemol-core.note::*common][common:1]]

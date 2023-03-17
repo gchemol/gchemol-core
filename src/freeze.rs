@@ -105,6 +105,7 @@ impl Molecule {
 }
 
 // test
+// #+name: 3ef32358
 
 #[test]
 fn test_mask() {
