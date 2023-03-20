@@ -1,4 +1,4 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::6eec5694][6eec5694]]
 use serde::*;
 
 use gchemol_graph::*;
@@ -11,9 +11,9 @@ use crate::atom::*;
 use crate::bond::*;
 use crate::element::*;
 use crate::property::PropertyStore;
-// imports:1 ends here
+// 6eec5694 ends here
 
-// [[file:../gchemol-core.note::*base][base:1]]
+// [[file:../gchemol-core.note::9fd07ad9][9fd07ad9]]
 type MolGraph = NxGraph<Atom, Bond>;
 
 /// Molecule is the most important data structure in gchemol, which repsents
@@ -50,7 +50,7 @@ pub struct Molecule {
 impl Molecule {
     /// get internal node index by atom sn.
     pub(crate) fn node_index(&self, sn: usize) -> NodeIndex {
-        *self.get_node_index(sn).expect(&format!("invalid atom sn: {}", sn))
+        *self.get_node_index(sn).unwrap_or_else(|| panic!("invalid atom sn: {}", sn))
     }
 
     /// get internal node index by atom sn.
@@ -60,10 +60,7 @@ impl Molecule {
 
     /// get atom sn  by internal node index.
     pub(crate) fn atom_sn(&self, n: NodeIndex) -> usize {
-        *self
-            .mapping
-            .get_by_right(&n)
-            .expect(&format!("invalid NodeIndex: {:?}", n))
+        *self.mapping.get_by_right(&n).unwrap_or_else(|| panic!("invalid NodeIndex: {:?}", n))
     }
 
     /// Removes atom sn from mapping and returns the associated NodeIndex.
@@ -71,7 +68,7 @@ impl Molecule {
         self.mapping.remove_by_left(&sn).map(|(_, n)| n)
     }
 }
-// base:1 ends here
+// 9fd07ad9 ends here
 
 // [[file:../gchemol-core.note::29c55361][29c55361]]
 /// `Molecule` constructors

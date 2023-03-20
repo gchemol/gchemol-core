@@ -11,6 +11,7 @@
 //===============================================================================#
 
 #![deny(missing_docs)] // rustdoc will fail if there is missing docs
+#![deny(clippy::all)]
 // cb1b201a ends here
 
 // [[file:../gchemol-core.note::*header][header:3]]

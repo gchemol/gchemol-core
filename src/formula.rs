@@ -12,7 +12,7 @@ use std::iter::IntoIterator;
 // imports:1 ends here
 
 // [[file:../gchemol-core.note::0d8318bb][0d8318bb]]
-fn get_reduced_symbols<'a, I>(symbols: I) -> HashMap<String, usize>
+fn get_reduced_symbols<I>(symbols: I) -> HashMap<String, usize>
 where
     I: IntoIterator,
     I::Item: std::fmt::Display,
@@ -29,7 +29,7 @@ where
     counts
 }
 
-fn get_reduced_formula<'a, I>(symbols: I) -> String
+fn get_reduced_formula<I>(symbols: I) -> String
 where
     I: IntoIterator,
     I::Item: std::fmt::Display,
@@ -51,7 +51,7 @@ where
             let n = sym_and_counts[k];
             // omit number if the count is 1: C1H4 ==> CH4
             if n == 1 {
-                format!("{k}")
+                k.to_string()
             } else {
                 format!("{k}{n}")
             }

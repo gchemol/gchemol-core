@@ -215,6 +215,7 @@ fn get_atom_mass(atom: &Atom) -> Option<f64> {
 }
 
 // atom
+// #+name: a8beb3dd
 
 /// Core data for `Atom`
 impl Atom {
@@ -242,7 +243,7 @@ impl Atom {
 
     /// Get mass in atomic mass unit. Return None if atom is dummy.
     pub fn get_mass(&self) -> Option<f64> {
-        self.mass.or(get_atom_mass(&self))
+        self.mass.or(get_atom_mass(self))
     }
 
     #[deprecated(note = "Use get_vdw_radius instead")]

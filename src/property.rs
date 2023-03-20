@@ -1,13 +1,12 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::22d13ff7][22d13ff7]]
 use std::collections::HashMap;
 
 use gut::prelude::*;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use serde_json;
 
 use crate::atom::{Point3, Vector3f};
 use crate::{Atom, Molecule};
-// imports:1 ends here
+// 22d13ff7 ends here
 
 // [[file:../gchemol-core.note::2484a0c8][2484a0c8]]
 #[cfg(feature = "adhoc")]
@@ -64,7 +63,7 @@ impl Molecule {
 }
 // 2484a0c8 ends here
 
-// [[file:../gchemol-core.note::*adhoc properties][adhoc properties:1]]
+// [[file:../gchemol-core.note::f924450d][f924450d]]
 /// A container storing extra information managed as key/value pairs
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct PropertyStore {
@@ -80,7 +79,7 @@ impl PropertyStore {
     /// Retrieve property associated with the `key`
     pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D> {
         if let Some(serialized) = self.data.get(key) {
-            let d = serde_json::from_str(&serialized)
+            let d = serde_json::from_str(serialized)
                 .with_context(|| format!("Failed to deserialize data for key {:?}", key))?;
             Ok(d)
         } else {
@@ -99,7 +98,7 @@ impl PropertyStore {
         self.data.remove(key);
     }
 }
-// adhoc properties:1 ends here
+// f924450d ends here
 
 // [[file:../gchemol-core.note::*test][test:1]]
 #[test]
