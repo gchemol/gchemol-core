@@ -50,10 +50,14 @@ fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: f6
 
 /// Guess if bonds exist between two atoms based on their distance.
 pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
+    #[cfg(not(target_arch = "wasm32"))]
     let options: RebondOptions = envy::prefixed("GCHEMOL_REBOND_").from_env().unwrap_or_else(|e| {
         error!("parsing bonding env error: {:?}", e);
         RebondOptions::default()
     });
+    #[cfg(target_arch = "wasm32")]
+    let options = RebondOptions::default();
+
     let bond_tolerance = options.bond_tolerance;
     if bond_tolerance != RebondOptions::default().bond_tolerance {
         info!("rebond: bond tolerance = {bond_tolerance}");
