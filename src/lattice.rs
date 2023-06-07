@@ -21,9 +21,17 @@ impl Molecule {
         self.lattice.as_mut()
     }
 
-    /// Set periodic lattice
+    /// Set periodic lattice as `lat`.
     pub fn set_lattice(&mut self, lat: Lattice) {
         self.lattice = Some(lat);
+    }
+
+    /// Set periodic Lattice as `lat`, and scaled atom positions to fit new
+    /// lattice. Will panic if not a periodic structure.
+    pub fn set_lattice_scaled(&mut self, lat: Lattice) {
+        let fracs: Vec<_> = self.get_scaled_positions().expect("not periodic struct").collect();
+        self.set_lattice(lat);
+        self.set_scaled_positions(fracs);
     }
 
     /// Return true if `Molecule` is a periodic structure.
