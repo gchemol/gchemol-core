@@ -1,9 +1,9 @@
-// [[file:../gchemol-core.note::*imports][imports:1]]
+// [[file:../gchemol-core.note::140362a3][140362a3]]
 use gut::prelude::*;
 use serde::*;
 
 use crate::{Atom, Bond, BondKind, Molecule};
-// imports:1 ends here
+// 140362a3 ends here
 
 // [[file:../gchemol-core.note::6f47fef0][6f47fef0]]
 #[serde(default)]
@@ -25,12 +25,59 @@ impl Default for RebondOptions {
             // JMOL: DEFAULT_BOND_TOLERANCE
             bond_tolerance: 0.45,
             ignore_pbc: false,
+
             // NOTE: 1.6 is the largest cov radius of all elements (jmol)
             distance_cutoff: 1.6 * 2.0 + 0.4,
         }
     }
 }
 // 6f47fef0 ends here
+
+// [[file:../gchemol-core.note::e3c667f7][e3c667f7]]
+fn find_nearest_neighbors(mol: &Molecule, options: &RebondOptions) -> Vec<(usize, usize, f64)> {
+    let distance_cutoff = options.distance_cutoff;
+
+    let mut nh = neighbors::Neighborhood::new();
+    let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
+    nh.update(points);
+    // for molecule with periodic structure
+    if let Some(lat) = mol.get_lattice() {
+        if !options.ignore_pbc {
+            nh.set_lattice(lat.matrix().into());
+        } else {
+            info!("ignored pbc when guess bonds");
+        }
+    }
+
+    let mut neighbors = vec![];
+    let mut connected = std::collections::HashMap::new();
+    for i in mol.numbers() {
+        // unique neighbors of `i` no double counting
+        let local_neighbors_uniq = nh.neighbors(i, distance_cutoff).filter(|n| n.node > i);
+        connected.clear();
+        for n in local_neighbors_uniq {
+            let j = n.node;
+            // use minimum image convention for periodic structure: we only
+            // count the bond between `i` and `j` calcualted with the nearest
+            // image of atom `j`
+            connected
+                .entry(j)
+                .and_modify(|dij| {
+                    if n.distance < *dij {
+                        *dij = n.distance;
+                    }
+                })
+                .or_insert(n.distance);
+        }
+
+        for (&j, &dij) in &connected {
+            neighbors.push((i, j, dij));
+        }
+    }
+
+    neighbors
+}
+// e3c667f7 ends here
 
 // [[file:../gchemol-core.note::270a1c57][270a1c57]]
 // guess bonds in Jmol style
@@ -49,61 +96,15 @@ fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: f6
 }
 
 /// Guess if bonds exist between two atoms based on their distance.
-pub(crate) fn guess_bonds(mol: &Molecule) -> Vec<(usize, usize, Bond)> {
-    #[cfg(not(target_arch = "wasm32"))]
-    let options: RebondOptions = envy::prefixed("GCHEMOL_REBOND_").from_env().unwrap_or_else(|e| {
-        error!("parsing bonding env error: {:?}", e);
-        RebondOptions::default()
-    });
-    #[cfg(target_arch = "wasm32")]
-    let options = RebondOptions::default();
-
-    let bond_tolerance = options.bond_tolerance;
-    if bond_tolerance != RebondOptions::default().bond_tolerance {
-        info!("rebond: bond tolerance = {bond_tolerance}");
-    }
-    let distance_cutoff = options.distance_cutoff;
-    if distance_cutoff != RebondOptions::default().distance_cutoff {
-        info!("rebond: distance cutoff = {distance_cutoff}");
-    }
-
-    let mut nh = neighbors::Neighborhood::new();
-    let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
-    nh.update(points);
-    // for molecule with periodic structure
-    if let Some(lat) = mol.get_lattice() {
-        if !options.ignore_pbc {
-            nh.set_lattice(lat.matrix().into());
-        } else {
-            info!("ignored pbc when guess bonds");
-        }
-    }
-
+pub(crate) fn guess_bonds(mol: &Molecule, options: &RebondOptions) -> Vec<(usize, usize, Bond)> {
     let mut bonds = vec![];
-    for (i, atom_i) in mol.atoms() {
-        // unique neighbors of `i` no double counting
-        let local_neighbors_uniq = nh.neighbors(i, distance_cutoff).filter(|n| n.node > i);
-        let mut connected = std::collections::HashMap::new();
-        for n in local_neighbors_uniq {
-            let j = n.node;
-            // use minimum image convention for periodic structure: we only
-            // count the bond between `i` and `j` calcualted with the nearest
-            // image of atom `j`
-            connected
-                .entry(j)
-                .and_modify(|dij| {
-                    if n.distance < *dij {
-                        *dij = n.distance;
-                    }
-                })
-                .or_insert(n.distance);
-        }
-        for (j, dij) in connected {
-            let atom_j = mol.get_atom(j).unwrap();
-            let bond = guess_bond_jmol(atom_i, atom_j, dij, bond_tolerance);
-            if !bond.is_dummy() {
-                bonds.push((i, j, bond));
-            }
+    let mut neighbors = find_nearest_neighbors(mol, options);
+    for (i, j, dij) in neighbors {
+        let atom_i = mol.get_atom_unchecked(i);
+        let atom_j = mol.get_atom_unchecked(j);
+        let bond = guess_bond_jmol(atom_i, atom_j, dij, options.bond_tolerance);
+        if !bond.is_dummy() {
+            bonds.push((i, j, bond));
         }
     }
 
@@ -138,16 +139,39 @@ impl Molecule {
         }
     }
 
-    /// Recalculates all bonds in molecule based on interatomic distances and
-    /// covalent radii. For periodic system, the bonds are determined by
-    /// applying miniumu image convention.
+    /// Recalculates all bonds in molecule based on interatomic
+    /// distances and covalent radii. For periodic system, the bonds
+    /// are determined in miniumu image convention.
     pub fn rebond(&mut self) {
         // remove all existing bonds
         self.unbound();
-        let bonds = guess_bonds(&self);
+
+        let options = rebond_options();
+        let bonds = guess_bonds(&self, &options);
         // add new bonds
         self.add_bonds_from(bonds);
     }
+}
+
+fn rebond_options() -> RebondOptions {
+    #[cfg(not(target_arch = "wasm32"))]
+    let options: RebondOptions = envy::prefixed("GCHEMOL_REBOND_").from_env().unwrap_or_else(|e| {
+        error!("parsing bonding env error: {:?}", e);
+        RebondOptions::default()
+    });
+    #[cfg(target_arch = "wasm32")]
+    let options = RebondOptions::default();
+
+    let bond_tolerance = options.bond_tolerance;
+    if bond_tolerance != RebondOptions::default().bond_tolerance {
+        info!("rebond: bond tolerance = {bond_tolerance}");
+    }
+
+    let distance_cutoff = options.distance_cutoff;
+    if distance_cutoff != RebondOptions::default().distance_cutoff {
+        info!("rebond: distance cutoff = {distance_cutoff}");
+    }
+    options
 }
 // 96d22124 ends here
 
