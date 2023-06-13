@@ -11,12 +11,14 @@ use crate::{Atom, Bond, BondKind, Molecule};
 pub struct RebondOptions {
     // The distance tolerance for determine bonded or not between two
     // atoms.
-    bond_tolerance: f64,
+    pub bond_tolerance: f64,
+
     // Ignore periodic lattice when create bonds
-    ignore_pbc: bool,
+    pub ignore_pbc: bool,
+
     // The distance cutoff for searching nearest neighbors. Beyond
     // this value, the bonding is not considered.
-    distance_cutoff: f64,
+    pub distance_cutoff: f64,
 }
 
 impl Default for RebondOptions {
@@ -24,6 +26,7 @@ impl Default for RebondOptions {
         Self {
             // JMOL: DEFAULT_BOND_TOLERANCE
             bond_tolerance: 0.45,
+
             ignore_pbc: false,
 
             // NOTE: 1.6 is the largest cov radius of all elements (jmol)
@@ -143,13 +146,25 @@ impl Molecule {
     /// distances and covalent radii. For periodic system, the bonds
     /// are determined in miniumu image convention.
     pub fn rebond(&mut self) {
+        let options = rebond_options();
+        self.rebond_with_options(&options);
+    }
+
+    /// Recalculates all bonds in molecule with rebond options `opts`.
+    /// For periodic system, the bonds are determined in miniumu image
+    /// convention.
+    pub fn rebond_with_options(&mut self, opts: &RebondOptions) {
         // remove all existing bonds
         self.unbound();
 
-        let options = rebond_options();
-        let bonds = guess_bonds(&self, &options);
+        let bonds = guess_bonds(&self, opts);
         // add new bonds
         self.add_bonds_from(bonds);
+    }
+
+    /// Return default options for `rebond`.
+    pub fn rebond_options() -> RebondOptions {
+        rebond_options()
     }
 }
 
