@@ -31,7 +31,7 @@ pub struct RebondOptions {
 
     // The distance cutoff for searching nearest neighbors. Beyond
     // this value, the bonding is not considered.
-    pub distance_cutoff: f64,
+    pub distance_cutoff: Option<f64>,
 
     /// The scale factor for covalent or vdw radius. Only relevant for
     /// rebond in VMD or Multiwfn scheme. The default value is 1.15
@@ -49,8 +49,7 @@ impl Default for RebondOptions {
 
             ignore_pbc: false,
 
-            // NOTE: 1.6 is the largest cov radius of all elements (jmol)
-            distance_cutoff: 1.6 * 2.0 + 0.4,
+            distance_cutoff: None,
 
             // the default scale factor for bonding, relevant for VMD
             // or Multiwfn scheme.
@@ -78,7 +77,8 @@ impl RebondOptions {
 
 // [[file:../gchemol-core.note::e3c667f7][e3c667f7]]
 fn find_nearest_neighbors(mol: &Molecule, options: &RebondOptions) -> Vec<(usize, usize, f64)> {
-    let distance_cutoff = options.distance_cutoff;
+    // NOTE: 1.6 is the largest cov radius of all elements (jmol)
+    let distance_cutoff = options.distance_cutoff.unwrap_or(1.6 * 2.0 + 0.4);
 
     let mut nh = neighbors::Neighborhood::new();
     let points = mol.atoms().map(|(i, atom)| (i, atom.position()));
@@ -262,7 +262,9 @@ fn rebond_options() -> RebondOptions {
 
     let distance_cutoff = options.distance_cutoff;
     if distance_cutoff != RebondOptions::default().distance_cutoff {
-        info!("rebond: distance cutoff = {distance_cutoff}");
+        if let Some(distance_cutoff) = distance_cutoff {
+            info!("rebond: nearest neighbor distance cutoff = {distance_cutoff}");
+        }
     }
     options
 }
