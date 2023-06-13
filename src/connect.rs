@@ -12,6 +12,9 @@ enum BondingScheme {
     #[default]
     Jmol,
 
+    /// bonding scheme in VMD
+    Vmd,
+
     /// bonding scheme in Multiwfn
     Multiwfn,
 }
@@ -21,7 +24,7 @@ enum BondingScheme {
 pub struct RebondOptions {
     // The distance tolerance for determine bonded or not between two
     // atoms. Only relevant for rebond in Jmol scheme.
-    pub bond_tolerance: f64,
+    pub bond_tolerance: Option<f64>,
 
     // Ignore periodic lattice when create bonds
     pub ignore_pbc: bool,
@@ -30,9 +33,10 @@ pub struct RebondOptions {
     // this value, the bonding is not considered.
     pub distance_cutoff: f64,
 
-    /// The scale factor for covalent radius. Only relevant for rebond
-    /// in Multiwfn scheme. The default value is 1.15.
-    pub cov_radius_scale_factor: f64,
+    /// The scale factor for covalent or vdw radius. Only relevant for
+    /// rebond in VMD or Multiwfn scheme. The default value is 1.15
+    /// for multiwfn, and 0.6 for VMD.
+    pub bond_scale_factor: Option<f64>,
 
     bonding_scheme: BondingScheme,
 }
@@ -41,15 +45,16 @@ impl Default for RebondOptions {
     fn default() -> Self {
         Self {
             // JMOL: DEFAULT_BOND_TOLERANCE
-            bond_tolerance: 0.45,
+            bond_tolerance: None,
 
             ignore_pbc: false,
 
             // NOTE: 1.6 is the largest cov radius of all elements (jmol)
             distance_cutoff: 1.6 * 2.0 + 0.4,
 
-            // the default scale factor used in Multiwfn
-            cov_radius_scale_factor: 1.15,
+            // the default scale factor for bonding, relevant for VMD
+            // or Multiwfn scheme.
+            bond_scale_factor: None,
 
             bonding_scheme: BondingScheme::default(),
         }
@@ -63,6 +68,7 @@ impl RebondOptions {
         let scheme = match s {
             "jmol" => BondingScheme::Jmol,
             "multiwfn" => BondingScheme::Multiwfn,
+            "vmd" => BondingScheme::Vmd,
             _ => unimplemented!(),
         };
         self.bonding_scheme = scheme;
@@ -116,12 +122,11 @@ fn find_nearest_neighbors(mol: &Molecule, options: &RebondOptions) -> Vec<(usize
 }
 // e3c667f7 ends here
 
-// [[file:../gchemol-core.note::270a1c57][270a1c57]]
-// guess bonds in Jmol style
-fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: f64) -> Bond {
-    match (atom1.get_bonding_radius(), atom2.get_bonding_radius()) {
+// [[file:../gchemol-core.note::b684b173][b684b173]]
+fn guess_bond_vmd(atom1: &Atom, atom2: &Atom, distance: f64, scale_factor: Option<f64>) -> Bond {
+    match (atom1.get_vdw_radius(), atom2.get_vdw_radius()) {
         (Some(r1), Some(r2)) => {
-            let rcut = r1 + r2 + bond_tolerance;
+            let rcut = (r1 + r1) * scale_factor.unwrap_or(0.6);
             if distance > rcut {
                 Bond::dummy()
             } else {
@@ -131,13 +136,13 @@ fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: f6
         _ => Bond::dummy(),
     }
 }
-// 270a1c57 ends here
+// b684b173 ends here
 
 // [[file:../gchemol-core.note::4e7cb1d8][4e7cb1d8]]
-fn guess_bond_multiwfn(atom1: &Atom, atom2: &Atom, distance: f64, bonding_threshold: f64) -> Bond {
+fn guess_bond_multiwfn(atom1: &Atom, atom2: &Atom, distance: f64, scale_factor: Option<f64>) -> Bond {
     match (atom1.get_cov_radius(), atom2.get_cov_radius()) {
         (Some(r1), Some(r2)) => {
-            let rcut = (r1 + r1) * bonding_threshold;
+            let rcut = (r1 + r1) * scale_factor.unwrap_or(1.15);
             if distance > rcut {
                 Bond::dummy()
             } else {
@@ -149,6 +154,23 @@ fn guess_bond_multiwfn(atom1: &Atom, atom2: &Atom, distance: f64, bonding_thresh
 }
 // 4e7cb1d8 ends here
 
+// [[file:../gchemol-core.note::270a1c57][270a1c57]]
+// guess bonds in Jmol style
+fn guess_bond_jmol(atom1: &Atom, atom2: &Atom, distance: f64, bond_tolerance: Option<f64>) -> Bond {
+    match (atom1.get_bonding_radius(), atom2.get_bonding_radius()) {
+        (Some(r1), Some(r2)) => {
+            let rcut = r1 + r2 + bond_tolerance.unwrap_or(0.45);
+            if distance > rcut {
+                Bond::dummy()
+            } else {
+                Bond::single()
+            }
+        }
+        _ => Bond::dummy(),
+    }
+}
+// 270a1c57 ends here
+
 // [[file:../gchemol-core.note::96d22124][96d22124]]
 /// Guess if bonds exist between two atoms based on their distance.
 pub(crate) fn guess_bonds(mol: &Molecule, options: &RebondOptions) -> Vec<(usize, usize, Bond)> {
@@ -159,7 +181,8 @@ pub(crate) fn guess_bonds(mol: &Molecule, options: &RebondOptions) -> Vec<(usize
         let atom_j = mol.get_atom_unchecked(j);
         let bond = match options.bonding_scheme {
             BondingScheme::Jmol => guess_bond_jmol(atom_i, atom_j, dij, options.bond_tolerance),
-            BondingScheme::Multiwfn => guess_bond_multiwfn(atom_i, atom_j, dij, options.cov_radius_scale_factor),
+            BondingScheme::Multiwfn => guess_bond_multiwfn(atom_i, atom_j, dij, options.bond_scale_factor),
+            BondingScheme::Vmd => guess_bond_vmd(atom_i, atom_j, dij, options.bond_scale_factor),
         };
         if !bond.is_dummy() {
             bonds.push((i, j, bond));
@@ -232,7 +255,9 @@ fn rebond_options() -> RebondOptions {
 
     let bond_tolerance = options.bond_tolerance;
     if bond_tolerance != RebondOptions::default().bond_tolerance {
-        info!("rebond: bond tolerance = {bond_tolerance}");
+        if let Some(bond_tolerance) = bond_tolerance {
+            info!("rebond: bond tolerance = {bond_tolerance}");
+        }
     }
 
     let distance_cutoff = options.distance_cutoff;
