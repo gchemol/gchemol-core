@@ -19,7 +19,7 @@ vecfx = { version = "0.1.2", features = ["nalgebra"] }
 gut = { version = "0.4", package = "gchemol-gut" }
 neighbors = { version = "0.1", package = "gchemol-neighbors" }
 gchemol-geometry = { version = "0.1.1" }
-gchemol-graph = "0.1.5"
+gchemol-graph = "0.1.6"
 gchemol-lattice = "0.1.1"
 
 [dev-dependencies]

@@ -89,9 +89,14 @@ impl Molecule {
 
     /// Break molecule into multiple fragments based on its bonding
     /// connectivity. Return molecules whole connected by bonds
-    /// without periodic lattice
+    /// without periodic lattice. The atom numbers in fragments will
+    /// be the same as in their parent.
     pub fn fragmented(&self) -> impl Iterator<Item = Self> + '_ {
-        self.graph().connected_components().map(|g| Molecule::from_graph(g))
+        self.graph().connected_components_node_indices().map(|nodes| {
+            let numbers: Vec<_> = nodes.iter().map(|&n| self.atom_sn(n)).collect();
+            let g = self.graph().subgraph(&nodes);
+            Molecule::from_graph_raw(g, numbers)
+        })
     }
 
     /// Return the number of fragments based on bonding connectivity.
@@ -154,8 +159,13 @@ fn test_topo_path() {
     }
     mol2.rebond();
     let frags = mol2.fragmented().collect_vec();
+
     assert_eq!(frags.len(), 2);
     assert_eq!(frags[0].formula(), "CH4");
     assert_eq!(frags[1].formula(), "CH4");
+
+    // atom numbers in each fragment should be the same as in `mol2`
+    let numbers: std::collections::HashSet<_> = frags.iter().map(|frag| frag.numbers()).flatten().collect();
+    assert_eq!(numbers.len(), mol2.natoms());
 }
 // cf82e7a7 ends here
