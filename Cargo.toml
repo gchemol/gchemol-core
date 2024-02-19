@@ -1,7 +1,7 @@
 # [[file:gchemol-core.note::8ea3ce8a][8ea3ce8a]]
 [package]
 name = "gchemol-core"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 description = "Core chemical objects for gchemol"
@@ -9,6 +9,7 @@ homepage = "https://github.com/gchemol/gchemol-core"
 repository = "https://github.com/gchemol/gchemol-core"
 license = "MIT OR Apache-2.0"
 exclude = ["bin/*", "docs/*", "ltxpng/*", "data/*"]
+keywords = ["chemistry", "molecule"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
@@ -25,6 +26,9 @@ gchemol-lattice = "0.1.1"
 [dev-dependencies]
 # for tests only
 # gchemol = { version = "0.0.42" }
+
+# workspace independent
+# [workspace]
 
 [features]
 adhoc = ["gchemol-graph/adhoc"] # for adhoc hacking
