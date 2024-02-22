@@ -43,9 +43,6 @@ mod ring;
 mod topology;
 
 #[cfg(feature = "adhoc")]
-pub use crate::freeze::Mask;
-
-#[cfg(feature = "adhoc")]
 mod selection;
 
 // #[cfg(feature = "adhoc")]
@@ -74,4 +71,10 @@ pub use crate::property::PropertyStore;
 pub mod neighbors {
     pub use ::neighbors::*;
 }
+
+#[cfg(feature = "adhoc")]
+pub mod trajectory;
+
+#[cfg(feature = "adhoc")]
+pub use crate::freeze::Mask;
 // 3a22317c ends here
