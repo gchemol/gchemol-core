@@ -63,11 +63,15 @@ impl Molecule {
 }
 // 2484a0c8 ends here
 
-// [[file:../gchemol-core.note::f924450d][f924450d]]
-/// A container storing extra information managed as key/value pairs
+// [[file:../gchemol-core.note::42021a2c][42021a2c]]
+use serde_json::{Map, Value};
+
+/// A container storing extra properties for any
+/// serializable/deserializable objects managed as json key/value
+/// pairs
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 pub struct PropertyStore {
-    data: HashMap<String, String>,
+    data: Map<String, Value>,
 }
 
 impl PropertyStore {
@@ -76,11 +80,10 @@ impl PropertyStore {
         self.data.contains_key(key)
     }
 
-    /// Retrieve property associated with the `key`
+    /// Retrieve property associated with the `key`.
     pub fn load<D: DeserializeOwned>(&self, key: &str) -> Result<D> {
-        if let Some(serialized) = self.data.get(key) {
-            let d = serde_json::from_str(serialized)
-                .with_context(|| format!("Failed to deserialize data for key {:?}", key))?;
+        if let Some(value) = self.data.get(key) {
+            let d = serde_json::from_value(value.clone()).with_context(|| format!("Failed to deserialize data for key {:?}", key))?;
             Ok(d)
         } else {
             bail!("Failed to get property with key {:?}", key)
@@ -88,25 +91,86 @@ impl PropertyStore {
     }
 
     /// Store property associatd with the `key`
-    pub fn store<D: Serialize>(&mut self, key: &str, value: D) {
-        let serialized = serde_json::to_string(&value).unwrap();
-        self.data.insert(key.into(), serialized);
+    pub fn store<D: Serialize>(&mut self, key: &str, value: D) -> Result<()> {
+        let value = serde_json::to_value(&value)?;
+        self.data.insert(key.into(), value);
+        Ok(())
     }
 
-    /// Discard property associated with the `key`
+    /// Discard stored property associated with the `key`.
     pub fn discard(&mut self, key: &str) {
-        self.data.remove(key);
+        let _ = self.data.remove(key);
     }
 }
-// f924450d ends here
+// 42021a2c ends here
 
-// [[file:../gchemol-core.note::*test][test:1]]
+// [[file:../gchemol-core.note::7113c55b][7113c55b]]
+impl PropertyStore {
+    /// Take the stored property associated with the `key` out of the
+    /// `PropertyStore`, leaving no copy.
+    pub fn take<D: DeserializeOwned>(&mut self, key: &str) -> Result<D> {
+        if let Some(value) = self.data.remove(key) {
+            let d = serde_json::from_value(value).with_context(|| format!("Failed to deserialize data for key {:?}", key))?;
+            Ok(d)
+        } else {
+            bail!("Failed to get property with key {:?}", key)
+        }
+    }
+
+    /// Clears all stored data.
+    #[inline]
+    pub fn clear(&mut self) {
+        self.data.clear();
+    }
+
+    /// Returns the number of stored items.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Returns true if `PropertyStore` contains no elements.
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+
+    /// Access to the inner map.
+    pub fn raw_map(&self) -> &Map<String, Value> {
+        &self.data
+    }
+
+    /// Mut access to the inner map.
+    pub fn raw_map_mut(&mut self) -> &mut Map<String, Value> {
+        &mut self.data
+    }
+}
+// 7113c55b ends here
+
+// [[file:../gchemol-core.note::4fe101ef][4fe101ef]]
 #[test]
 fn test_atom_store() {
+    // store builtin types
     let mut x = PropertyStore::default();
     let d = [1, 2, 3];
     x.store("k", d);
     let x: [usize; 3] = x.load("k").unwrap();
     assert_eq!(d, x);
+
+    // Store a custom struct
+    #[derive(Debug, Default, Eq, PartialEq, Clone, Serialize, Deserialize)]
+    struct A {
+        a: usize,
+        b: isize,
+    }
+
+    let a = A::default();
+    let mut x = PropertyStore::default();
+    x.store("a", &a);
+    let a_loaded: A = x.load("a").unwrap();
+    assert_eq!(a_loaded, a);
+
+    let a_took: A = x.take("a").unwrap();
+    assert_eq!(x.contains_key("a"), false);
 }
-// test:1 ends here
+// 4fe101ef ends here
