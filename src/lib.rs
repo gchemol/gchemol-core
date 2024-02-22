@@ -2,11 +2,8 @@
 //===============================================================================#
 //   DESCRIPTION:  molecule object repsented in graph data structure
 //
-//       OPTIONS:  ---
-//  REQUIREMENTS:  ---
 //         NOTES:  based on petgraph
 //        AUTHOR:  Wenping Guo <ybyygu@gmail.com>
-//       LICENCE:  GPL version 3
 //       CREATED:  <2018-04-12 Thu 15:48>
 //===============================================================================#
 
