@@ -118,6 +118,11 @@ impl Trajectory {
         }
     }
 
+    /// Return true if trajectory has no frames.
+    pub fn is_empty(&self) -> bool {
+        self.frames.len() == 0
+    }
+
     /// Return the number of frames in the trajectory.
     pub fn nframes(&self) -> usize {
         self.frames.len()
