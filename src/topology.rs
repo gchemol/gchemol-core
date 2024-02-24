@@ -4,12 +4,13 @@ use crate::Molecule;
 // ff231cb5 ends here
 
 // [[file:../gchemol-core.note::51a9048d][51a9048d]]
-fn create_submolecule_from_atoms(mol: &Molecule, atoms: &[usize]) -> Option<Molecule> {
-    let nodes: Option<Vec<_>> = atoms.iter().map(|&a| mol.get_node_index(a).copied()).collect();
+fn create_submolecule_from_atoms<'a>(mol: &Molecule, atoms: impl IntoIterator<Item = &'a usize>) -> Option<Molecule> {
+    let atoms: Vec<_> = atoms.into_iter().copied().collect();
+    let nodes: Option<Vec<_>> = atoms.iter().copied().map(|a| mol.get_node_index(a).copied()).collect();
     let nodes = nodes?;
     let graph = mol.graph().subgraph(&nodes);
 
-    Molecule::from_graph_raw(graph, atoms.into_iter().copied()).into()
+    Molecule::from_graph_raw(graph, atoms).into()
 }
 // 51a9048d ends here
 
@@ -66,7 +67,7 @@ impl Molecule {
     ///
     /// # NOTE
     /// * The sub molecule shares the same numbering system with its parent.
-    pub fn get_sub_molecule(&self, atoms: &[usize]) -> Option<Molecule> {
+    pub fn get_sub_molecule<'a>(&self, atoms: impl IntoIterator<Item = &'a usize>) -> Option<Molecule> {
         create_submolecule_from_atoms(&self, atoms)
     }
 
