@@ -36,7 +36,8 @@ mod configuration {
     }
 
     impl Configuration {
-        pub(super) fn from_molecule(mol: &Molecule) -> Self {
+        /// Construct `Configuration` from `mol`
+        pub(crate) fn from_molecule(mol: &Molecule) -> Self {
             Self {
                 title: mol.title().to_owned(),
                 positions: mol.positions().collect(),
@@ -108,7 +109,7 @@ fn matching(mol1: &Molecule, mol2: &Molecule) -> bool {
 // [[file:../gchemol-core.note::c0387851][c0387851]]
 impl Trajectory {
     /// Construct `Trajectory` object from a list of `Molecule`
-    pub fn new(mols: Vec<Molecule>) -> Self {
+    fn new(mols: Vec<Molecule>) -> Self {
         // FIXME: avoid re-allocation
         let frames: Vec<_> = mols.iter().map(Configuration::from_molecule).collect();
 
