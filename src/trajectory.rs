@@ -90,19 +90,21 @@ pub struct Trajectory {
 
 // [[file:../gchemol-core.note::a58ecc65][a58ecc65]]
 fn matching(mol1: &Molecule, mol2: &Molecule) -> bool {
-    // check number of atoms
-    if mol1.natoms() == mol2.natoms() {
-        // check elements
-        let syms1 = mol1.symbols();
-        let syms2 = mol2.symbols();
-        if syms1.zip(syms2).all(|(s1, s2)| s1 == s2) {
-            // check lattice
-            let match_lat_none = mol1.lattice.is_none() && mol2.lattice.is_none();
-            let match_lat_some = mol1.lattice.is_some() && mol2.lattice.is_some();
-            return match_lat_none || match_lat_none;
-        }
+    // Check number of atoms
+    if mol1.natoms() != mol2.natoms() {
+        return false;
     }
-    false
+
+    // Check elements
+    let syms1 = mol1.symbols();
+    let syms2 = mol2.symbols();
+    if !syms1.zip(syms2).all(|(s1, s2)| s1 == s2) {
+        return false;
+    }
+
+    // Check lattice
+    // Assuming the intention is to ensure both molecules are either periodic or not.
+    mol1.is_periodic() == mol2.is_periodic()
 }
 // a58ecc65 ends here
 
