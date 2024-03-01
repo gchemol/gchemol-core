@@ -76,5 +76,8 @@ pub mod neighbors {
 pub mod trajectory;
 
 #[cfg(feature = "adhoc")]
+pub use topology::AtomGroup;
+
+#[cfg(feature = "adhoc")]
 pub use crate::freeze::Mask;
 // 3a22317c ends here

@@ -11,9 +11,14 @@ use crate::atom::*;
 use crate::bond::*;
 use crate::element::*;
 use crate::property::PropertyStore;
+
+use std::collections::HashMap;
 // 6eec5694 ends here
 
 // [[file:../gchemol-core.note::9fd07ad9][9fd07ad9]]
+#[cfg(feature = "adhoc")]
+use crate::topology::AtomGroup;
+
 type MolGraph = NxGraph<Atom, Bond>;
 
 /// Molecule is the most important data structure in gchemol, which repsents
@@ -38,6 +43,10 @@ pub struct Molecule {
 
     /// Molecular name.
     pub(crate) name: String,
+
+    /// Atom groups
+    #[cfg(feature = "adhoc")]
+    pub(crate) groups: HashMap<String, AtomGroup>,
 
     /// core data in graph
     pub(crate) graph: MolGraph,

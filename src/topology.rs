@@ -1,7 +1,81 @@
 // [[file:../gchemol-core.note::ff231cb5][ff231cb5]]
 use crate::common::*;
 use crate::Molecule;
+use crate::PropertyStore;
 // ff231cb5 ends here
+
+// [[file:../gchemol-core.note::82f7facb][82f7facb]]
+use crate::Atom;
+use std::collections::HashSet;
+
+/// A defined linked collection of atoms or a single atom within a
+/// molecular entity.
+#[derive(Debug, Clone, Deserialize, Serialize, Default)]
+pub struct AtomGroup {
+    atoms: HashSet<NodeIndex>,
+
+    /// Arbitrary property stored in key-value pair. Key is a string
+    /// type, but it is the responsibility of the user to correctly
+    /// interpret the value.
+    pub properties: PropertyStore,
+}
+
+impl AtomGroup {
+    fn new(mol: &Molecule, atoms: &[usize]) -> Option<Self> {
+        let atoms = atoms.iter().filter_map(|&n| mol.get_node_index(n).copied()).collect();
+        Self { atoms, ..Default::default() }.into()
+    }
+
+    fn get_atoms<'a>(&'a self, mol: &'a Molecule) -> impl Iterator<Item = (usize, &'a Atom)> + 'a {
+        self.atoms.iter().map(move |&i| (mol.atom_sn(i), &mol.graph[i]))
+    }
+}
+
+/// Atom groups related methods
+impl Molecule {
+    /// Define a new atom group with `group_name` using atoms in
+    /// `group`. Old group with the same name will be overwrote.
+    pub fn define_group(&mut self, group_name: &str, group: &[usize]) -> Option<AtomGroup> {
+        let group = AtomGroup::new(self, group)?;
+        self.groups.insert(group_name.to_string(), group)
+    }
+
+    /// Removes an atom group `group_name` from `Molecule`, returning
+    /// the `AtomGroup` with `group_name` if it previously in the
+    /// `Molecule`.
+    pub fn remove_group(&mut self, group_name: &str) -> Option<AtomGroup> {
+        self.groups.remove(group_name)
+    }
+
+    /// Returns true if `Molecule` contains atom group `group_name`.
+    pub fn has_group(&self, group_name: &str) -> bool {
+        self.groups.contains_key(group_name)
+    }
+
+    /// Renames an atom group `old_name` with `new_name`.
+    pub fn rename_group(&mut self, old_name: &str, new_name: &str) -> Option<()> {
+        let group = self.groups.remove(old_name)?;
+        self.groups.insert(new_name.to_string(), group);
+        Some(())
+    }
+
+    /// Accesses the atom group in `group_name`.
+    pub fn get_group(&self, group_name: &str) -> Option<&AtomGroup> {
+        self.groups.get(group_name)
+    }
+
+    /// Mut access to the atom group in `group_name`.
+    pub fn get_group_mut(&mut self, group_name: &str) -> Option<&mut AtomGroup> {
+        self.groups.get_mut(group_name)
+    }
+
+    /// Gets atoms in group `group_name`.
+    pub fn get_atoms_in_group(&self, group_name: &str) -> Option<impl Iterator<Item = (usize, &Atom)>> {
+        let group = self.get_group(group_name)?;
+        Some(group.get_atoms(self))
+    }
+}
+// 82f7facb ends here
 
 // [[file:../gchemol-core.note::51a9048d][51a9048d]]
 fn create_submolecule_from_atoms<'a>(mol: &Molecule, atoms: impl IntoIterator<Item = &'a usize>) -> Option<Molecule> {
