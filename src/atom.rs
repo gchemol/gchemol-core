@@ -190,7 +190,7 @@ impl FromStr for Atom {
 
         let mut atom = Atom::new(sym, [px, py, pz]);
         // HACK: parse velocities
-        if nparts >= 6 {
+        if nparts > 6 {
             let vxyz: Vec<_> = parts[4..7].iter().filter_map(|x| x.parse().ok()).collect();
             if vxyz.len() == 3 {
                 atom.velocity = [vxyz[0], vxyz[1], vxyz[2]].into();
